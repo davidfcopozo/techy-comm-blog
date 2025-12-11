@@ -54,7 +54,7 @@
     "highlight.js": "^11.11.1",
     "lowlight": "^3.3.0",
     "lucide-react": "^0.365.0",
-    "next": "15.3.3",
+    "next": "15.3.6",
     "next-auth": "^4.24.7",
     "next-intl": "^4.3.4",
     "next-themes": "^0.3.0",
