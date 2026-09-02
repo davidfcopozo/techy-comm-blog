@@ -1,7 +1,7 @@
 import { CommentInterface, ReplyInterface } from "@/typings/interfaces";
 import useBulkFetch from "./useBulkFetch";
 import { useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 
 const useFetchReplies = ({
   ids,
@@ -20,7 +20,7 @@ const useFetchReplies = ({
 }) => {
   const queryClient = useQueryClient();
 
-  const updateRepliesCache = (fetchedReplies: ReplyInterface[]) => {
+  const updateRepliesCache = useCallback((fetchedReplies: ReplyInterface[]) => {
     queryClient.setQueryData(
       ["replies"],
       (oldReplies: ReplyInterface[] = []) => {
@@ -30,7 +30,7 @@ const useFetchReplies = ({
         return [...oldReplies, ...newReplies];
       }
     );
-  };
+  }, [queryClient]);
 
   const {
     data: fetchedReplies,
@@ -49,7 +49,7 @@ const useFetchReplies = ({
     if (fetchedReplies && Array.isArray(fetchedReplies)) {
       updateRepliesCache(fetchedReplies as unknown as ReplyInterface[]);
     }
-  }, [fetchedReplies]);
+  }, [fetchedReplies, updateRepliesCache]);
 
   return { fetchedReplies, isLoading, isFetching };
 };
