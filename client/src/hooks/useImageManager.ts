@@ -1,12 +1,6 @@
 import { useState, useCallback } from "react";
 import { useToast } from "@/components/ui/use-toast";
-import { storage } from "../../firebaseConfig";
-import {
-  ref,
-  uploadBytes,
-  getDownloadURL,
-  deleteObject,
-} from "firebase/storage";
+import { supabase } from "../supabaseConfig";
 import { useQueryClient } from "@tanstack/react-query";
 import { ImageInterface, ImageMetadata } from "@/typings/interfaces";
 import { UserType } from "@/typings/types";
@@ -235,12 +229,26 @@ export const useImageManager = () => {
 
         // Generate a unique filename
         const id = `${file.name.split(".")[0]}-${Date.now()}`;
-        const idWithoutSpaces = id.replace(/\\s+/g, "-");
+        const idWithoutSpaces = id.replace(/\s+/g, "-");
         const fileName = encodeURIComponent(idWithoutSpaces);
+        const filePath = `${currentUserId}/${fileName}`;
 
-        const storageRef = ref(storage, `images/${currentUserId}/${fileName}`);
-        const snapshot = await uploadBytes(storageRef, file);
-        downloadURL = await getDownloadURL(snapshot.ref);
+        const { error: uploadError } = await supabase.storage
+          .from("images")
+          .upload(filePath, file, {
+            contentType: file.type,
+            upsert: true,
+          });
+
+        if (uploadError) {
+          throw uploadError;
+        }
+
+        const { data: publicUrlData } = supabase.storage
+          .from("images")
+          .getPublicUrl(filePath);
+
+        downloadURL = publicUrlData.publicUrl;
 
         const dimensions = await getImageDimensions(file);
 
@@ -263,24 +271,18 @@ export const useImageManager = () => {
         return downloadURL;
       } catch (error) {
         setUploading(false);
-        // If metadata storage fails but Firebase upload succeeded, clean up the uploaded file
+        // If metadata storage fails but Supabase upload succeeded, clean up the uploaded file
         if (downloadURL) {
           try {
-            const imageUrl = downloadURL;
-            const imagePath = imageUrl
-              .split(`${currentUserId}%2F`)[1]
-              ?.split("?")[0];
+            const id = `${file.name.split(".")[0]}-${Date.now()}`;
+            const idWithoutSpaces = id.replace(/\s+/g, "-");
+            const fileName = encodeURIComponent(idWithoutSpaces);
+            const filePath = `${currentUserId}/${fileName}`;
 
-            if (imagePath) {
-              const imageRef = ref(
-                storage,
-                `images/${currentUserId}/${imagePath}`
-              );
-              await deleteObject(imageRef);
-            }
+            await supabase.storage.from("images").remove([filePath]);
           } catch (cleanupError) {
             console.error(
-              "Failed to clean up orphaned Firebase image:",
+              "Failed to clean up orphaned Supabase image:",
               cleanupError
             );
           }
@@ -357,24 +359,36 @@ export const useImageManager = () => {
         // Call the API to delete the metadata
         await deleteImageMetadata({ itemId: imageId });
 
-        // Only proceed with Firebase deletion if MongoDB deletion succeeded
+        // Only proceed with Supabase deletion if MongoDB deletion succeeded
         try {
           const imageUrl = imageToDelete.url;
-          const pathPart = imageUrl.split("/o/")[1];
+          let storagePath = "";
 
-          if (pathPart) {
-            const encodedPath = pathPart.split("?")[0];
-            const decodedPath = decodeURIComponent(encodedPath);
+          if (imageUrl.includes("/storage/v1/object/public/images/")) {
+            storagePath = imageUrl.split("/storage/v1/object/public/images/")[1];
+          } else if (imageUrl.includes("/images/")) {
+            storagePath = imageUrl.split("/images/")[1]?.split("?")[0];
+          }
 
-            const imageRef = ref(storage, decodedPath);
-            await deleteObject(imageRef);
+          if (storagePath) {
+            const decodedPath = decodeURIComponent(storagePath);
+            const { error: removeError } = await supabase.storage
+              .from("images")
+              .remove([decodedPath]);
+
+            if (removeError) {
+              console.warn(
+                "Supabase deletion issue (non-critical):",
+                removeError.message
+              );
+            }
           } else {
             console.warn("Could not parse image path from URL:", imageUrl);
           }
-        } catch (firebaseError: any) {
+        } catch (storageError: any) {
           console.warn(
-            "Firebase deletion issue (non-critical):",
-            firebaseError.message
+            "Supabase deletion issue (non-critical):",
+            storageError.message
           );
         }
 

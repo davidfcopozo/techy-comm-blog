@@ -1,13 +1,7 @@
 import { useState, useCallback, ChangeEvent, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
-import { storage } from "../../firebaseConfig";
-import {
-  ref,
-  uploadBytes,
-  getDownloadURL,
-  deleteObject,
-} from "firebase/storage";
+import { supabase } from "../supabaseConfig";
 import {
   CategoryInterface,
   InitialPost,
@@ -182,7 +176,7 @@ export const useBlogEditor = ({ initialPost, slug }: UseBlogEditorProps) => {
     },
   });
 
-  const deleteImageFromFirebase = useCallback(
+  const deleteImageFromSupabase = useCallback(
     async (imageUrl: string) => {
       const currentUser = await queryClient.getQueryData<{ data: UserType }>([
         "currentUser",
@@ -190,14 +184,20 @@ export const useBlogEditor = ({ initialPost, slug }: UseBlogEditorProps) => {
       if (!currentUser) {
         throw new Error("Current user data not found");
       }
-      let currentUserId: string = `${currentUser.data._id}`;
       try {
-        const imagePath = imageUrl
-          .split(`${currentUserId}%2F`)[1]
-          ?.split("?")[0];
-        if (imagePath) {
-          const imageRef = ref(storage, `images/${currentUserId}/${imagePath}`);
-          await deleteObject(imageRef);
+        let storagePath = "";
+        if (imageUrl.includes("/storage/v1/object/public/images/")) {
+          storagePath = imageUrl.split("/storage/v1/object/public/images/")[1];
+        } else if (imageUrl.includes("/images/")) {
+          storagePath = imageUrl.split("/images/")[1]?.split("?")[0];
+        }
+
+        if (storagePath) {
+          const decodedPath = decodeURIComponent(storagePath);
+          const { error } = await supabase.storage
+            .from("images")
+            .remove([decodedPath]);
+          if (error) throw error;
         }
       } catch (error) {
         throw error;
@@ -205,6 +205,8 @@ export const useBlogEditor = ({ initialPost, slug }: UseBlogEditorProps) => {
     },
     [queryClient]
   );
+
+  const deleteImageFromFirebase = deleteImageFromSupabase;
 
   const handleTitleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
@@ -259,9 +261,24 @@ export const useBlogEditor = ({ initialPost, slug }: UseBlogEditorProps) => {
         const id = `${file.name.split(".")[0]}-${Date.now()}`;
         let idWithoutSpaces = id.replace(/\s+/g, "-");
         const fileName = encodeURIComponent(idWithoutSpaces);
-        const storageRef = ref(storage, `images/${currentUserId}/${fileName}`);
-        const snapshot = await uploadBytes(storageRef, file);
-        const downloadURL = await getDownloadURL(snapshot.ref);
+        const filePath = `${currentUserId}/${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from("images")
+          .upload(filePath, file, {
+            contentType: file.type,
+            upsert: true,
+          });
+
+        if (uploadError) {
+          throw uploadError;
+        }
+
+        const { data: publicUrlData } = supabase.storage
+          .from("images")
+          .getPublicUrl(filePath);
+
+        const downloadURL = publicUrlData.publicUrl;
         const newImages = [...currentImages, downloadURL];
         setCurrentImages(newImages);
         return downloadURL;

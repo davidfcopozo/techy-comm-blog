@@ -29,7 +29,8 @@ export type UsePostRequestType = {
 };
 
 export type ExtractImagesFromContentType = (content: string) => string[];
-export type DeleteImageFromFirebaseType = (imageUrl: string) => Promise<void>;
+export type DeleteImageFromSupabaseType = (imageUrl: string) => Promise<void>;
+export type DeleteImageFromFirebaseType = DeleteImageFromSupabaseType;
 
 export type UserType = Omit<UserInterface, "socialMediaProfiles"> & {
   socialMediaProfiles: SocialMediaProfilesInterface;

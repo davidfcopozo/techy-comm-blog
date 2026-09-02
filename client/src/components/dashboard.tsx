@@ -90,7 +90,7 @@ export function Dashboard() {
   );
 
   function handleNewPost() {
-    router.push("/new-post");
+    router.push("/new");
   }
 
   return (
