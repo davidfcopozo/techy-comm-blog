@@ -26,7 +26,7 @@ const intlMiddleware = createIntlMiddleware({
   alternateLinks: false,
 });
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Handle internationalization first
