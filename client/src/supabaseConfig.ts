@@ -4,7 +4,7 @@ const supabaseUrl =
   process.env.NEXT_PUBLIC_SUPABASE_URL ||
   process.env.SUPABASE_URL ||
   process.env.SUPABASE_ ||
-  "";
+  "https://placeholder.supabase.co";
 
 const supabaseAnonKey =
   process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
@@ -12,6 +12,7 @@ const supabaseAnonKey =
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
   process.env.SUPABASE_ANON_KEY ||
   process.env.SUPABASE_KEY ||
-  "";
+  "placeholder-key";
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+

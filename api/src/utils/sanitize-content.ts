@@ -242,7 +242,7 @@ export const sanitizeContent = (dirtyHtml: string) => {
 
   // Ensure we have a string (DOMPurify can return string, HTMLElement, or DocumentFragment)
   const sanitizedString =
-    typeof sanitized === "string" ? sanitized : sanitized.toString();
+    typeof sanitized === "string" ? sanitized : String(sanitized);
 
   // Second pass: Remove non-YouTube iframes
   const secureHtml = removeNonYouTubeIframes(sanitizedString);
