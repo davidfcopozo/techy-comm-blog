@@ -249,7 +249,18 @@ export const oAuth = async (
 
     if (!user) {
       // Create a new user
-      const [firstName, lastName] = (name || "").split(" ");
+      const nameParts = (name || "").trim().split(/\s+/).filter(Boolean);
+      let firstName = nameParts[0] || email.split("@")[0];
+      let lastName = nameParts.slice(1).join(" ");
+
+      if (!firstName || firstName.length < 2) {
+        firstName = email.split("@")[0];
+        if (firstName.length < 2) firstName = firstName + "_user";
+      }
+      if (!lastName || lastName.length < 2) {
+        lastName = firstName.length >= 2 ? firstName : "User";
+      }
+
       user = await User.create({
         email,
         firstName,
