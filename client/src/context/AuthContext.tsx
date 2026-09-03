@@ -102,9 +102,15 @@ export const AuthContextProvider: FC<{ children: ReactNode }> = ({
     async (provider: "github" | "google") => {
       setIsLoading(true);
       try {
-        const result = await signIn(provider, { redirect: false });
+        const result = await signIn(provider, {
+          callbackUrl: "/dashboard",
+          redirect: true,
+        });
         if (result?.error) {
           throw new Error(result.error);
+        }
+        if (result?.url) {
+          window.location.href = result.url;
         }
         setTimeout(async () => {
           clearSessionCache();
