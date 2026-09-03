@@ -139,7 +139,8 @@ export const AuthModal = memo(function AuthModal({
       setOauthLoading(provider);
 
       const result = await signIn(provider, {
-        redirect: false,
+        callbackUrl: window.location.pathname || "/dashboard",
+        redirect: true,
       });
 
       if (result?.error) {
@@ -149,6 +150,9 @@ export const AuthModal = memo(function AuthModal({
           description: tAuthModal("socialSignInError", { provider }),
         });
         return;
+      }
+      if (result?.url) {
+        window.location.href = result.url;
       }
 
       // Refresh the auth context to update the UI
