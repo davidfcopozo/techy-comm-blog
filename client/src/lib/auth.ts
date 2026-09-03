@@ -11,6 +11,11 @@ export const authOptions: NextAuthOptions = {
     GithubProvider({
       clientId: process.env.NEXT_PUBLIC_GITHUB_ID!,
       clientSecret: process.env.NEXT_PUBLIC_GITHUB_SECRET!,
+      authorization: {
+        params: {
+          scope: "read:user user:email",
+        },
+      },
     }),
     GoogleProvider({
       clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
@@ -58,9 +63,38 @@ export const authOptions: NextAuthOptions = {
     newUser: "/profile",
   },
   callbacks: {
-    async signIn({ user, account }) {
+    async signIn({ user, account, profile }) {
       try {
         if (account && account.provider !== "credentials") {
+          if (!user.email && account.provider === "github" && account.access_token) {
+            try {
+              const emailsRes = await axios.get("https://api.github.com/user/emails", {
+                headers: {
+                  Authorization: `Bearer ${account.access_token}`,
+                  "User-Agent": "NextAuth",
+                },
+              });
+              const emails = emailsRes.data;
+              if (Array.isArray(emails) && emails.length > 0) {
+                const primaryEmailObj =
+                  emails.find((e: any) => e.primary && e.verified) ||
+                  emails.find((e: any) => e.primary) ||
+                  emails[0];
+                if (primaryEmailObj?.email) {
+                  user.email = primaryEmailObj.email;
+                }
+              }
+            } catch (err) {
+              console.error("Failed to fetch GitHub private email:", err);
+            }
+          }
+
+          // Fallback if email is still missing (e.g. GitHub App without email permission or private email)
+          if (!user.email && account.provider === "github") {
+            const username = (profile as any)?.login || account.providerAccountId;
+            user.email = `${username}@users.noreply.github.com`;
+          }
+
           if (!user.email) {
             return false;
           }
