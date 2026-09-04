@@ -163,5 +163,5 @@ This project is licensed under the MIT License. See [LICENSE](LICENSE) for detai
 </p>
 
 <p align="center">
-  Made with <span style="font-size:1.2em;">☕</span> by [Your Name](https://github.com/yourusername)
+  Made with <span style="font-size:1.2em;">☕</span> by [David Francisco](https://davidfrancisco.dev)
 </p>
