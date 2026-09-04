@@ -7,7 +7,7 @@ export async function PUT(req: NextRequest, props: { params: Promise<{ id: strin
   const { id } = params;
   const token = await getToken({
     req: req,
-    secret: process.env.NEXT_PUBLIC_NEXTAUTH_SECRET,
+    secret: process.env.NEXTAUTH_SECRET || process.env.NEXT_PUBLIC_NEXTAUTH_SECRET,
   });
 
   if (!id) {

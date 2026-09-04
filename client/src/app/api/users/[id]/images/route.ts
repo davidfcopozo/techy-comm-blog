@@ -12,7 +12,7 @@ import {
 } from "@/typings/api/images";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_ENDPOINT;
-const SECRET = process.env.NEXT_PUBLIC_NEXTAUTH_SECRET;
+const SECRET = process.env.NEXTAUTH_SECRET || process.env.NEXT_PUBLIC_NEXTAUTH_SECRET;
 
 export async function GET(
   req: NextRequest,
