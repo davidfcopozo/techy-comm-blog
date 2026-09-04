@@ -4,7 +4,10 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import type { NextAuthOptions } from "next-auth";
 import axios from "axios";
 import { ApiError } from "./errors/ApiError";
-const baseUrl = `${process.env.NEXT_PUBLIC_FRONTEND_API_ENDPOINT}/api`;
+const backendUrl =
+  process.env.BACKEND_API_ENDPOINT ||
+  process.env.NEXT_PUBLIC_BACKEND_API_ENDPOINT ||
+  "http://localhost:8000/api/v1";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -32,7 +35,7 @@ export const authOptions: NextAuthOptions = {
           if (!credentials?.email || !credentials?.password) {
             throw ApiError.BadRequest("Email and password are required");
           }
-          const res = await axios.post(`${baseUrl}/auth/login`, {
+          const res = await axios.post(`${backendUrl}/auth/login`, {
             email: credentials.email,
             password: credentials.password,
           });
@@ -99,7 +102,7 @@ export const authOptions: NextAuthOptions = {
             return false;
           }
 
-          const res = await axios.post(`${baseUrl}/auth/oauth`, {
+          const res = await axios.post(`${backendUrl}/auth/oauth`, {
             provider: account.provider,
             email: user.email,
             name: user.name,
