@@ -19,7 +19,7 @@ export async function GET(
   try {
     const token = await getToken({
       req: req,
-      secret: process.env.NEXT_PUBLIC_NEXTAUTH_SECRET,
+      secret: process.env.NEXTAUTH_SECRET || process.env.NEXT_PUBLIC_NEXTAUTH_SECRET,
     });
 
     const headers: any = {
@@ -60,7 +60,7 @@ export async function DELETE(
   const { id: postId, commentId, replyId } = params;
   const token = await getToken({
     req: req,
-    secret: process.env.NEXT_PUBLIC_NEXTAUTH_SECRET,
+    secret: process.env.NEXTAUTH_SECRET || process.env.NEXT_PUBLIC_NEXTAUTH_SECRET,
   });
 
   if (!token) {
