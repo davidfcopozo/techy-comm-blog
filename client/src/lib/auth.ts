@@ -10,7 +10,7 @@ export const authOptions: NextAuthOptions = {
   providers: [
     GithubProvider({
       clientId: process.env.NEXT_PUBLIC_GITHUB_ID!,
-      clientSecret: process.env.NEXT_PUBLIC_GITHUB_SECRET!,
+      clientSecret: process.env.GITHUB_SECRET || process.env.NEXT_PUBLIC_GITHUB_SECRET!,
       authorization: {
         params: {
           scope: "read:user user:email",
@@ -19,7 +19,7 @@ export const authOptions: NextAuthOptions = {
     }),
     GoogleProvider({
       clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_SECRET!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || process.env.NEXT_PUBLIC_GOOGLE_CLIENT_SECRET!,
     }),
     CredentialsProvider({
       name: "Credentials",
@@ -140,6 +140,6 @@ export const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",
   },
-  secret: process.env.NEXT_PUBLIC_NEXTAUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET || process.env.NEXT_PUBLIC_NEXTAUTH_SECRET,
   debug: process.env.NODE_ENV === "development",
 };
