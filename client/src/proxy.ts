@@ -52,7 +52,7 @@ export async function proxy(request: NextRequest) {
 
   const token = await getToken({
     req: request,
-    secret: process.env.NEXT_PUBLIC_NEXTAUTH_SECRET,
+    secret: process.env.NEXTAUTH_SECRET || process.env.NEXT_PUBLIC_NEXTAUTH_SECRET,
   });
 
   if (actualPathname === "/auth") {
