@@ -9,6 +9,11 @@ const backendUrl =
   process.env.NEXT_PUBLIC_BACKEND_API_ENDPOINT ||
   "http://localhost:8000/api/v1";
 
+const backendAxios = axios.create({
+  baseURL: backendUrl,
+  timeout: 20000,
+});
+
 export const authOptions: NextAuthOptions = {
   providers: [
     GithubProvider({
@@ -35,7 +40,7 @@ export const authOptions: NextAuthOptions = {
           if (!credentials?.email || !credentials?.password) {
             throw ApiError.BadRequest("Email and password are required");
           }
-          const res = await axios.post(`${backendUrl}/auth/login`, {
+          const res = await backendAxios.post("/auth/login", {
             email: credentials.email,
             password: credentials.password,
           });
@@ -52,7 +57,8 @@ export const authOptions: NextAuthOptions = {
           } else {
             return null;
           }
-        } catch (error) {
+        } catch (error: any) {
+          console.error("Authorize error:", error.code || error.message);
           return null;
         }
       },
@@ -102,7 +108,7 @@ export const authOptions: NextAuthOptions = {
             return false;
           }
 
-          const res = await axios.post(`${backendUrl}/auth/oauth`, {
+          const res = await backendAxios.post("/auth/oauth", {
             provider: account.provider,
             email: user.email,
             name: user.name,
