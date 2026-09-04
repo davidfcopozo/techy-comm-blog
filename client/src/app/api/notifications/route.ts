@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
 
   const token = await getToken({
     req: request,
-    secret: process.env.NEXT_PUBLIC_NEXTAUTH_SECRET,
+    secret: process.env.NEXTAUTH_SECRET || process.env.NEXT_PUBLIC_NEXTAUTH_SECRET,
   });
 
   if (!token) {

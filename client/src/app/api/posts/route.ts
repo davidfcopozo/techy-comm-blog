@@ -6,7 +6,7 @@ export async function GET(req: NextRequest) {
   try {
     const token = await getToken({
       req: req,
-      secret: process.env.NEXT_PUBLIC_NEXTAUTH_SECRET,
+      secret: process.env.NEXTAUTH_SECRET || process.env.NEXT_PUBLIC_NEXTAUTH_SECRET,
     });
 
     const headers: any = {
@@ -48,7 +48,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const token = await getToken({
     req: req,
-    secret: process.env.NEXT_PUBLIC_NEXTAUTH_SECRET,
+    secret: process.env.NEXTAUTH_SECRET || process.env.NEXT_PUBLIC_NEXTAUTH_SECRET,
   });
 
   if (!token) {

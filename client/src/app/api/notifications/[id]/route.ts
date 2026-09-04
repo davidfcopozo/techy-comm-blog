@@ -13,7 +13,7 @@ export async function PATCH(
 
   const token = await getToken({
     req: request,
-    secret: process.env.NEXT_PUBLIC_NEXTAUTH_SECRET,
+    secret: process.env.NEXTAUTH_SECRET || process.env.NEXT_PUBLIC_NEXTAUTH_SECRET,
   });
 
   if (!token) {
@@ -56,7 +56,7 @@ export async function DELETE(
   // Get token for authentication
   const token = await getToken({
     req: request,
-    secret: process.env.NEXT_PUBLIC_NEXTAUTH_SECRET,
+    secret: process.env.NEXTAUTH_SECRET || process.env.NEXT_PUBLIC_NEXTAUTH_SECRET,
   });
 
   if (!token) {

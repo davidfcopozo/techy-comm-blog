@@ -19,7 +19,7 @@ export async function GET(
   try {
     const token = await getToken({
       req: req,
-      secret: process.env.NEXT_PUBLIC_NEXTAUTH_SECRET,
+      secret: process.env.NEXTAUTH_SECRET || process.env.NEXT_PUBLIC_NEXTAUTH_SECRET,
     });
 
     const headers: any = {
@@ -60,7 +60,7 @@ export async function POST(
   const { id } = params;
   const token = await getToken({
     req: req,
-    secret: process.env.NEXT_PUBLIC_NEXTAUTH_SECRET,
+    secret: process.env.NEXTAUTH_SECRET || process.env.NEXT_PUBLIC_NEXTAUTH_SECRET,
   });
 
   if (!token) {
@@ -109,7 +109,7 @@ export async function PUT(
   const { id: postId } = params;
   const token = await getToken({
     req: req,
-    secret: process.env.NEXT_PUBLIC_NEXTAUTH_SECRET,
+    secret: process.env.NEXTAUTH_SECRET || process.env.NEXT_PUBLIC_NEXTAUTH_SECRET,
   });
 
   if (!token) {
