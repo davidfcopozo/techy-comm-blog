@@ -41,7 +41,7 @@ export function UserAvatar({
   return (
     <Avatar className={cn("border", sizeClasses[size], className)}>
       <AvatarImage
-        src={user?.avatar?.toString() || "/placeholder-user.jpg"}
+        src={user?.avatar?.toString() || undefined}
         alt={`${user?.firstName || user?.username || "User"}'s avatar`}
       />
       <AvatarFallback className={size === "xl" ? "text-lg font-bold" : ""}>

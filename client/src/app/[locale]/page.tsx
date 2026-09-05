@@ -22,24 +22,32 @@ export default function Home() {
     data: posts,
     error,
     isFetching,
-  } = useFetchRequest(["posts"], `/api/posts`);
+  } = useFetchRequest(["posts"], `/api/posts`, {
+    staleTime: 0,
+    refetchOnMount: "always",
+    skipCustomCache: true,
+  });
   const {
     data: categories,
     error: categoriesError,
     isFetching: isCategoriesFetching,
-  } = useFetchRequest(["categories"], `/api/categories`);
+  } = useFetchRequest(["categories"], `/api/categories`, {
+    staleTime: 0,
+    refetchOnMount: "always",
+    skipCustomCache: true,
+  });
   const [searchQuery, setSearchQuery] = useState("");
   const [isFocused, setIsFocused] = useState(false);
 
   useEffect(() => {
-    if (error) {
+    if (error && (error as any)?.response?.status !== 404) {
       toast({
         variant: "destructive",
         title: tToasts("error"),
         description: error.message || tToasts("fetchPostsError"),
       });
     }
-    if (categoriesError) {
+    if (categoriesError && (categoriesError as any)?.response?.status !== 404) {
       toast({
         variant: "destructive",
         title: tToasts("error"),

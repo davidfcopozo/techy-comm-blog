@@ -7,9 +7,5 @@ interface RootLayoutProps {
 // This is the root layout that wraps the entire application
 // The actual internationalized layout is in [locale]/layout.tsx
 export default function RootLayout({ children }: RootLayoutProps) {
-  return (
-    <html>
-      <body>{children}</body>
-    </html>
-  );
+  return children;
 }
