@@ -17,8 +17,8 @@ export async function GET(req: NextRequest) {
       headers.Authorization = `Bearer ${token.accessToken}`;
     }
 
-    if (token?.sub) {
-      headers["X-User-ID"] = token.sub;
+    if (token?.id || token?.sub) {
+      headers["X-User-ID"] = (token.id || token.sub) as string;
     } else {
       console.log("❌ No token or token.sub found for posts request");
     }
