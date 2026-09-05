@@ -66,6 +66,7 @@ export default async function LocaleLayout({
           "min-h-screen bg-background font-sans antialiased !pointer-events-auto",
           fontSans.variable
         )}
+        suppressHydrationWarning
       >
         <NextIntlClientProvider locale={locale} messages={messages}>
           <QueryProvider>
