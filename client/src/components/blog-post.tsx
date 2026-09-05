@@ -6,7 +6,7 @@ import {
 } from "@/utils/formats";
 import Image from "next/image";
 import Link from "next/link";
-import React, { memo } from "react";
+import React, { memo, useEffect, useState } from "react";
 import CommentSection from "./comment-section";
 import { UserType } from "@/typings/types";
 import ContentRenderer from "./ui/content-renderer";
@@ -31,6 +31,7 @@ const BlogPost = memo(function BlogPost({
   bookmarked,
   amountOfBookmarks,
   post,
+  isPreview = false,
 }: BlogPostProps) {
   const locale = useLocale();
   const router = useRouter();
@@ -68,6 +69,19 @@ const BlogPost = memo(function BlogPost({
 
   const postedBy = post.postedBy;
 
+  const safeCoverImage =
+    post?.coverImage &&
+    typeof post.coverImage === "string" &&
+    !post.coverImage.includes("fallback-featured-image.webp")
+      ? post.coverImage
+      : "/default-image.jpg";
+
+  const [imgSrc, setImgSrc] = useState(safeCoverImage);
+
+  useEffect(() => {
+    setImgSrc(safeCoverImage);
+  }, [safeCoverImage]);
+
   return (
     <div className="w-full min-h-screen bg-background mt-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -94,7 +108,9 @@ const BlogPost = memo(function BlogPost({
                 icon={Heart}
                 count={amountOfLikes}
                 label={t("likePost")}
-                onClick={handleLikeClick}
+                onClick={isPreview ? undefined : handleLikeClick}
+                disabled={isPreview}
+                title={isPreview ? t("actionsDisabledInPreview") : t("likePost")}
                 iconStyles={liked ? "text-pink-500" : "hover:stroke-pink-500"}
                 activeColor="text-pink-500"
                 isActivated={liked}
@@ -103,7 +119,9 @@ const BlogPost = memo(function BlogPost({
                 icon={Bookmark}
                 count={amountOfBookmarks}
                 label={t("savePost")}
-                onClick={handleBookmarkClick}
+                onClick={isPreview ? undefined : handleBookmarkClick}
+                disabled={isPreview}
+                title={isPreview ? t("actionsDisabledInPreview") : t("savePost")}
                 iconStyles={
                   bookmarked ? "stroke-indigo-500" : "hover:stroke-indigo-500"
                 }
@@ -115,23 +133,33 @@ const BlogPost = memo(function BlogPost({
                 count={post.comments?.length}
                 label={t("commentPost")}
                 iconStyles="hover:stroke-amber-500"
-                onClick={() => scrollToElement("comments-section", "header")}
+                onClick={
+                  isPreview
+                    ? undefined
+                    : () => scrollToElement("comments-section", "header")
+                }
+                disabled={isPreview}
+                title={
+                  isPreview ? t("actionsDisabledInPreview") : t("commentPost")
+                }
                 activeColor="text-amber-500"
               />
-              <ShareButton post={post} />
+              <ShareButton post={post} disabled={isPreview} />
             </div>
           </div>
           {/* Main */}
           <main className="order-1 lg:order-2 lg:flex-1">
             <article className="rounded-lg overflow-hidden mt-6">
               <div className="flex flex-col">
-                {post.coverImage && (
+                {imgSrc && (
                   <div className="w-full order-2 lg:order-1 rounded-lg overflow-hidden h-[50vh] sm:h-[60vh] md:h-[70vh] relative">
                     <Image
-                      src={post.coverImage as string}
+                      src={imgSrc}
                       alt={t("blogCoverAlt")}
                       fill
                       style={{ objectFit: "cover" }}
+                      onError={() => setImgSrc("/default-image.jpg")}
+                      priority
                     />
                   </div>
                 )}
@@ -171,8 +199,9 @@ const BlogPost = memo(function BlogPost({
                                       ? "text-amber-500 hover:text-[hsl(var(--thread-border))] following-button"
                                       : "text-[hsl(var(--thread-border))] hover:text-amber-500"
                                   }`}
-                                  disabled={isPending}
-                                  onClick={handleFollowToggle}
+                                  disabled={isPending || isPreview}
+                                  onClick={isPreview ? undefined : handleFollowToggle}
+                                  title={isPreview ? t("actionsDisabledInPreview") : undefined}
                                   data-following={isFollowed ? "true" : "false"}
                                 >
                                   {" "}
@@ -231,7 +260,11 @@ const BlogPost = memo(function BlogPost({
                           extraClasses="p-0"
                           count={amountOfLikes}
                           label={t("likePost")}
-                          onClick={handleLikeClick}
+                          onClick={isPreview ? undefined : handleLikeClick}
+                          disabled={isPreview}
+                          title={
+                            isPreview ? t("actionsDisabledInPreview") : t("likePost")
+                          }
                           iconStyles={`!h-5 !w-5 ${
                             liked ? "text-pink-500" : "hover:stroke-pink-500"
                           }`}
@@ -244,7 +277,11 @@ const BlogPost = memo(function BlogPost({
                           count={amountOfBookmarks}
                           label={t("savePost")}
                           extraClasses="p-0"
-                          onClick={handleBookmarkClick}
+                          onClick={isPreview ? undefined : handleBookmarkClick}
+                          disabled={isPreview}
+                          title={
+                            isPreview ? t("actionsDisabledInPreview") : t("savePost")
+                          }
                           iconStyles={`!h-5 !w-5 ${
                             bookmarked
                               ? "stroke-indigo-500"
@@ -260,14 +297,23 @@ const BlogPost = memo(function BlogPost({
                           count={post.comments?.length}
                           label={t("commentPost")}
                           iconStyles={`!h-5 !w-5 ${"hover:stroke-amber-500"}`}
-                          onClick={() =>
-                            scrollToElement("comments-section", "header")
+                          onClick={
+                            isPreview
+                              ? undefined
+                              : () =>
+                                  scrollToElement("comments-section", "header")
+                          }
+                          disabled={isPreview}
+                          title={
+                            isPreview
+                              ? t("actionsDisabledInPreview")
+                              : t("commentPost")
                           }
                           activeColor="text-amber-500"
                           horizontalCount
                         />
                       </div>
-                      <ShareButton post={post} />
+                      <ShareButton post={post} disabled={isPreview} />
                     </div>
                   </div>
                   <h1 className="order-1 lg:order-2 text-2xl text-center font-serif font-semibold pb-4 pt-10 text-foreground md:pt-12 md:pb-8 lg:text-4xl md:text-3xl">
@@ -281,7 +327,11 @@ const BlogPost = memo(function BlogPost({
                   className="w-[95%] sm:w-[90%] md:w-[80%] pt-4 mx-auto"
                 />
               </div>
-              <CommentSection comments={post.comments || []} post={post} />
+              <CommentSection
+                comments={post.comments || []}
+                post={post}
+                isPreview={isPreview}
+              />
             </article>
           </main>
           {/* Right Panel - Author Info */}
@@ -305,6 +355,7 @@ const BlogPost = memo(function BlogPost({
                 isPending={isPending}
                 isFollowed={isFollowed}
                 isPostOwner={isPostOwner}
+                isPreview={isPreview}
               />
             </div>
           </div>

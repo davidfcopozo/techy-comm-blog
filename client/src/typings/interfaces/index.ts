@@ -114,6 +114,7 @@ export interface NewPostHeaderProps {
   slug?: string;
   onPreview?: () => void;
   hasContent?: boolean;
+  onBack?: () => void;
 }
 
 export interface BlogEditorProps {
@@ -231,6 +232,8 @@ export interface EngagementButtonProps {
   activeColor?: string;
   isActivated?: boolean;
   horizontalCount?: boolean;
+  disabled?: boolean;
+  title?: string;
 }
 
 export interface BlogPostProps {
@@ -242,6 +245,7 @@ export interface BlogPostProps {
   amountOfBookmarks?: number;
   amountOfLikes?: number;
   post?: PostType;
+  isPreview?: boolean;
 }
 
 export interface SocialMediaConfig {
@@ -265,6 +269,7 @@ export interface AuthorPanelProps {
   isFollowed: boolean;
   isPending: boolean;
   isPostOwner?: boolean;
+  isPreview?: boolean;
 }
 
 export interface ImageFile {

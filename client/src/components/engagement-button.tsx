@@ -11,10 +11,14 @@ export const EngagementButton = memo(function EngagementButton({
   activeColor = "#1d9bf0",
   isActivated = false,
   horizontalCount = false,
+  disabled = false,
+  title,
 }: EngagementButtonProps) {
   return (
     <button
-      onClick={onClick}
+      onClick={disabled ? undefined : onClick}
+      disabled={disabled}
+      title={title}
       className={`
         relative 
         flex 
@@ -25,6 +29,7 @@ export const EngagementButton = memo(function EngagementButton({
         transition-colors 
         duration-200
         outline-none
+        ${disabled ? "opacity-50 cursor-not-allowed" : ""}
         ${extraClasses && extraClasses}
       `}
       aria-label={label}
