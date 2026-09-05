@@ -67,11 +67,14 @@ export function LanguageSwitcher() {
         <Button
           variant="ghost"
           size="sm"
-          className="h-8 px-2 text-xs"
+          className="h-8 px-1.5 sm:px-2 text-xs"
           disabled={isPending}
         >
-          <Globe className="h-4 w-4 mr-1" />
-          {getLanguageLabel(locale)}
+          <Globe className="h-4 w-4 sm:mr-1" />
+          <span className="hidden sm:inline">{getLanguageLabel(locale)}</span>
+          <span className="inline sm:hidden uppercase font-medium text-[11px] ml-1">
+            {locale}
+          </span>
           <span className="sr-only">{t("selectLanguage")}</span>
         </Button>
       </DropdownMenuTrigger>
