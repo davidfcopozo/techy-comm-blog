@@ -14,7 +14,7 @@ import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { NewPostHeaderProps } from "@/typings/interfaces";
-import { ChevronDown, Eye, EyeOff } from "lucide-react";
+import { ChevronDown, Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 export function NewPostHeader({
@@ -25,6 +25,7 @@ export function NewPostHeader({
   slug,
   onPreview,
   hasContent = false,
+  onBack,
 }: NewPostHeaderProps) {
   const t = useTranslations("editor");
   const { theme, systemTheme } = useTheme();
@@ -58,13 +59,30 @@ export function NewPostHeader({
 
   return (
     <header className="fixed w-full justify-between top-0 z-10 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
-      <Link
-        href="/"
-        className="flex items-center gap-2 text-lg font-semibold md:text-base"
-      >
-        <LogoIcon width="80 " height="80" color={darkTheme} />
-        <span className="sr-only">TechyComm logo</span>
-      </Link>
+      <div className="flex items-center gap-2 sm:gap-3">
+        {onBack && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onBack}
+            className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground px-2 sm:px-3 h-9"
+            title={t("backToPosts")}
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span className="hidden sm:inline font-medium text-sm">
+              {t("backToPosts")}
+            </span>
+          </Button>
+        )}
+        {onBack && <div className="h-4 w-[1px] bg-border hidden sm:block" />}
+        <Link
+          href="/"
+          className="flex items-center gap-2 text-lg font-semibold md:text-base"
+        >
+          <LogoIcon width="80 " height="80" color={darkTheme} />
+          <span className="sr-only">TechyComm logo</span>
+        </Link>
+      </div>
       <nav className="ml-auto flex-col items-center gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
         <div className="flex text-sm gap-2 items-center md:gap-4 lg:gap-5">
           <ModeToggle />
@@ -96,14 +114,18 @@ export function NewPostHeader({
           </Button>
         )}
         {isPublished ? (
-          hasChanges && !isSaving ? (
+          isSaving ? (
+            <Button className="bg-foreground" size="sm" disabled={true}>
+              {t("updating")}
+            </Button>
+          ) : hasChanges ? (
             <Button
               className="bg-foreground"
               size="sm"
               onClick={handlePublish}
               disabled={isSaving}
             >
-              {isSaving ? t("updating") : t("update")}
+              {t("update")}
             </Button>
           ) : (
             <DropdownMenu>

@@ -313,6 +313,8 @@
     "follow": "Follow",
     "unfollow": "Unfollow",
     "blogCoverAlt": "Blog Cover",
+    "actionsDisabledInPreview": "Post actions are disabled in preview mode",
+    "commentsDisabledInPreview": "Comments are disabled in preview mode",
     "share": {
       "sharePost": "Share post",
       "nativeShare": "Natively",
@@ -346,6 +348,7 @@
     "relatedPosts": "Related Posts"
   },
   "editor": {
+    "backToPosts": "Back to posts",
     "coverImage": "Cover Image",
     "uploadNew": "Upload New",
     "browseGallery": "Browse Gallery",
@@ -361,6 +364,7 @@
     "updating": "Updating...",
     "publish": "Publish",
     "publishing": "Publishing...",
+    "published": "Published",
     "unpublish": "Unpublish",
     "undo": "Undo",
     "redo": "Redo",
