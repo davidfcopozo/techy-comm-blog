@@ -14,6 +14,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { locales } from "@/i18n/config";
+import NextTopLoader from "nextjs-toploader";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -77,9 +78,23 @@ export default async function LocaleLayout({
                   disableTransitionOnChange
                 >
                   <SocketProvider>
+                    <NextTopLoader
+                      color="#3b82f6"
+                      initialPosition={0.08}
+                      crawlSpeed={200}
+                      height={3}
+                      crawl={true}
+                      showSpinner={false}
+                      easing="ease"
+                      speed={200}
+                      shadow="0 0 10px #3b82f6,0 0 5px #3b82f6"
+                      zIndex={99999}
+                    />
                     <Header />
                     <UnverifiedEmailBanner />
-                    {children}
+                    <div className="animate-in fade-in duration-200">
+                      {children}
+                    </div>
                     <Toaster />
                   </SocketProvider>
                 </ThemeProvider>
