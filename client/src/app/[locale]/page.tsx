@@ -1,6 +1,6 @@
 "use client";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { Search, BookOpen, FileText } from "lucide-react";
 import Link from "next/link";
 import useFetchRequest from "@/hooks/useFetchRequest";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -10,6 +10,7 @@ import { CategoryType, PostType } from "@/typings/types";
 import CategoriesSkeleton from "@/components/categories-skeleton";
 import SearchResults from "@/components/search-results";
 import { BlogPostCard } from "@/components/blog-post-card";
+import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 
 export default function Home() {
@@ -104,8 +105,26 @@ export default function Home() {
               <PostSkeletonCard />
               <PostSkeletonCard />
             </div>
-          ) : (
+          ) : blogCards && blogCards.length > 0 ? (
             blogCards
+          ) : (
+            <div className="flex flex-col items-center justify-center py-16 px-4 text-center rounded-xl border border-dashed bg-muted/20 mt-8">
+              <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4 text-muted-foreground">
+                <BookOpen className="w-8 h-8" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">
+                {t("noPostsFound")}
+              </h3>
+              <p className="text-sm text-muted-foreground max-w-sm mb-6">
+                {t("noPostsDescription")}
+              </p>
+              <Button asChild>
+                <Link href="/new">
+                  <FileText className="w-4 h-4 mr-2" />
+                  {t("newPost")}
+                </Link>
+              </Button>
+            </div>
           )}
         </main>
 
