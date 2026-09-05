@@ -79,9 +79,18 @@ export function getCachedRequest<T>(
 
 export function clearCache(key?: string) {
   if (key) {
-    requestCache.delete(key);
-    responseCache.delete(key);
-    if (DEBUG_MODE) console.log(`[Cache] Cleared cache for key: ${key}`);
+    for (const k of Array.from(responseCache.keys())) {
+      if (k === key || k.startsWith(`${key}?`) || k.startsWith(`${key}/`)) {
+        responseCache.delete(k);
+      }
+    }
+    for (const k of Array.from(requestCache.keys())) {
+      if (k === key || k.startsWith(`${key}?`) || k.startsWith(`${key}/`)) {
+        requestCache.delete(k);
+      }
+    }
+    if (DEBUG_MODE)
+      console.log(`[Cache] Cleared cache for key or prefix: ${key}`);
   } else {
     requestCache.clear();
     responseCache.clear();

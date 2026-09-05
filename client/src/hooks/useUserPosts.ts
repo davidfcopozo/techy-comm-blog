@@ -11,7 +11,13 @@ const useUserPosts = (userId: string) => {
 
   const blogPosts = Array.isArray(posts?.data)
     ? posts.data
-        .filter((post: PostType) => post?.postedBy?._id.toString() === userId)
+        .filter((post: PostType) => {
+          if (!userId) return false;
+          const authorId =
+            post?.postedBy?._id?.toString() ||
+            (typeof post?.postedBy === "string" ? post.postedBy : "");
+          return authorId === userId;
+        })
         .sort(
           (a: PostType, b: PostType) =>
             new Date(String(b.createdAt ?? new Date())).getTime() -
