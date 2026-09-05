@@ -29,10 +29,12 @@ const useDeletePost = () => {
       await queryClient.cancelQueries({ queryKey: ["user-posts"] });
 
       const previousPosts = queryClient.getQueryData<any>(["posts"]);
+      const previousUserPosts =
+        queryClient.getQueryData<any>(["user-posts"]);
 
       const targetId = variables.post._id?.toString() || variables.post._id;
 
-      queryClient.setQueryData(["posts"], (old: any) => {
+      const filterOutPost = (old: any) => {
         if (!old) return old;
         if (Array.isArray(old)) {
           return old.filter(
@@ -52,9 +54,12 @@ const useDeletePost = () => {
           };
         }
         return old;
-      });
+      };
 
-      return { previousPosts };
+      queryClient.setQueryData(["posts"], filterOutPost);
+      queryClient.setQueryData(["user-posts"], filterOutPost);
+
+      return { previousPosts, previousUserPosts };
     },
     onSuccess: (data, variables) => {
       clearCache("/api/posts");
@@ -69,7 +74,7 @@ const useDeletePost = () => {
 
       const targetId = variables.post._id?.toString() || variables.post._id;
 
-      queryClient.setQueryData(["posts"], (old: any) => {
+      const filterOutPost = (old: any) => {
         if (!old) return old;
         if (Array.isArray(old)) {
           return old.filter(
@@ -89,7 +94,10 @@ const useDeletePost = () => {
           };
         }
         return old;
-      });
+      };
+
+      queryClient.setQueryData(["posts"], filterOutPost);
+      queryClient.setQueryData(["user-posts"], filterOutPost);
 
       toast({
         title: "Success",
@@ -99,6 +107,9 @@ const useDeletePost = () => {
     onError: (error, variables, context) => {
       if (context?.previousPosts) {
         queryClient.setQueryData(["posts"], context.previousPosts);
+      }
+      if (context?.previousUserPosts) {
+        queryClient.setQueryData(["user-posts"], context.previousUserPosts);
       }
       toast({
         variant: "destructive",

@@ -11,7 +11,11 @@ const usePatchRequest = <TData = unknown, TVariables = unknown>({
 }: UseMutationRequestProps<TData, TVariables>) => {
   const { mutate, data, status, error } = useMutation({
     mutationFn: async (body: any) => {
-      const res = await axios.patch(url, body);
+      const targetUrl =
+        body?._id && (url.includes("undefined") || url === "/api/posts/")
+          ? `/api/posts/${body._id}`
+          : url;
+      const res = await axios.patch(targetUrl, body);
       return res.data.data;
     },
     onSuccess: onSuccess,
