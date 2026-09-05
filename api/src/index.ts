@@ -25,7 +25,7 @@ import {
 dotenv.config();
 
 const PORT = process.env.PORT || 4000;
-const MONGO_DB: string = process.env.MONGO_DB as string;
+const MONGO_DB: string = (process.env.MONGO_DB || process.env.MONGODB_URI) as string;
 
 const app = express();
 
