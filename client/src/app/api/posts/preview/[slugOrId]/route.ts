@@ -32,13 +32,18 @@ export async function GET(
   }
 
   try {
+    const headers: any = {
+      Authorization: `Bearer ${token.accessToken}`,
+      "Content-Type": "application/json",
+    };
+
+    if (token?.id || token?.sub) {
+      headers["X-User-ID"] = (token.id || token.sub) as string;
+    }
+
     const res = await axios.get(
       `${process.env.NEXT_PUBLIC_BACKEND_API_ENDPOINT}/posts/preview/${slugOrId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token.accessToken}`,
-        },
-      }
+      { headers }
     );
 
     return new Response(JSON.stringify(res.data), {

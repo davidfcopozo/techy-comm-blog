@@ -11,19 +11,28 @@ export const optionalAuth = (
   _res: Response,
   next: NextFunction
 ) => {
-  const authHeader = req.headers.authorization;
+  let token: string | undefined;
 
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return next();
+  const authCookie = req.signedCookies;
+  if (authCookie && authCookie.token) {
+    token = authCookie.token;
   }
 
-  const token = authHeader.split(" ")[1];
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith("Bearer ")) {
+    token = authHeader.split(" ")[1];
+  }
 
-  try {
-    const payload = isTokenValid(token) as JwtPayload;
-    req.userId = payload.userId;
-  } catch (error) {
-    // Invalid token, continue without user ID
+  if (token) {
+    try {
+      const payload = isTokenValid(token) as JwtPayload;
+      if (payload && payload.userId) {
+        req.userId = payload.userId;
+        req.user = payload;
+      }
+    } catch (error) {
+      // Invalid token, continue without user ID
+    }
   }
 
   next();

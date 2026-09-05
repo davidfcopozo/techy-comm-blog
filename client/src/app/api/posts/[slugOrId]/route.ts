@@ -30,8 +30,8 @@ export async function GET(
       headers.Authorization = `Bearer ${token.accessToken}`;
     }
 
-    if (token?.sub) {
-      headers["X-User-ID"] = token.sub;
+    if (token?.id || token?.sub) {
+      headers["X-User-ID"] = (token.id || token.sub) as string;
     } else {
       console.log("❌ No token or token.sub found for post request");
     }
@@ -87,15 +87,19 @@ export async function PATCH(
   try {
     const body = await req.json();
 
+    const headers: any = {
+      Authorization: `Bearer ${token?.accessToken}`,
+      "Content-Type": "application/json",
+    };
+
+    if (token?.id || token?.sub) {
+      headers["X-User-ID"] = (token.id || token.sub) as string;
+    }
+
     const res = await axios.patch(
       `${process.env.NEXT_PUBLIC_BACKEND_API_ENDPOINT}/posts/${slugOrId}`,
       body,
-      {
-        headers: {
-          Authorization: `Bearer ${token?.accessToken}`,
-          "Content-Type": "application/json",
-        },
-      }
+      { headers }
     );
 
     return new Response(JSON.stringify(res.data), {
@@ -145,13 +149,19 @@ export async function DELETE(
   }
 
   try {
+    const headers: any = {};
+
+    if (token?.accessToken) {
+      headers.Authorization = `Bearer ${token?.accessToken}`;
+    }
+
+    if (token?.id || token?.sub) {
+      headers["X-User-ID"] = (token.id || token.sub) as string;
+    }
+
     const res = await axios.delete(
       `${process.env.NEXT_PUBLIC_BACKEND_API_ENDPOINT}/posts/${slugOrId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token?.accessToken}`,
-        },
-      }
+      { headers }
     );
 
     return new Response(JSON.stringify(res.data), {
