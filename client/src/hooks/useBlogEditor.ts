@@ -60,6 +60,7 @@ export const useBlogEditor = ({ initialPost, slug }: UseBlogEditorProps) => {
   } = usePostRequest({
     url: "/api/posts",
     onSuccess: (data) => {
+      clearCache("/api/posts");
       queryClient.invalidateQueries({ queryKey: ["posts"], exact: true });
 
       // Update lastSavedData to current state to reset change indicator
@@ -117,6 +118,7 @@ export const useBlogEditor = ({ initialPost, slug }: UseBlogEditorProps) => {
   } = usePatchRequest({
     url: `/api/posts/${initialPost?._id}`,
     onSuccess: (updatePostData, variables) => {
+      clearCache("/api/posts");
       queryClient.invalidateQueries({ queryKey: ["posts"], exact: true });
 
       if (slug) {
