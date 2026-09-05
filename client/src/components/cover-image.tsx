@@ -83,10 +83,17 @@ const CoverImage = ({
     } as any);
   };
 
-  const displayImage =
+  const rawDisplay =
     previewUrl ||
     selectedGalleryUrl ||
     (temporaryCoverImage ? URL.createObjectURL(temporaryCoverImage) : imageUrl);
+
+  const displayImage =
+    rawDisplay &&
+    typeof rawDisplay === "string" &&
+    !rawDisplay.includes("fallback-featured-image.webp")
+      ? rawDisplay
+      : null;
 
   useEffect(() => {
     return () => {

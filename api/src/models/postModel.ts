@@ -2,7 +2,8 @@ import mongoose, { model } from "mongoose";
 import { PostInterface } from "../typings/models/post";
 const { Schema } = mongoose;
 
-const DEFAULT_COVER_IMAGE = process.env.DEFAULT_COVER_IMAGE;
+const DEFAULT_COVER_IMAGE =
+  process.env.DEFAULT_COVER_IMAGE || "/default-image.jpg";
 
 const postSchema = new Schema<PostInterface>(
   {
@@ -17,9 +18,13 @@ const postSchema = new Schema<PostInterface>(
     coverImage: {
       type: String,
       public_id: String,
-      default: DEFAULT_COVER_IMAGE,
+      default: () => DEFAULT_COVER_IMAGE,
       set: (value: string | null | undefined) => {
-        if (!value || value.trim() === "") {
+        if (
+          !value ||
+          value.trim() === "" ||
+          value.includes("fallback-featured-image.webp")
+        ) {
           return DEFAULT_COVER_IMAGE;
         }
         return value;
