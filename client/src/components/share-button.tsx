@@ -21,12 +21,15 @@ import { useTranslations } from "next-intl";
 
 export const ShareButton = memo(function ShareButton({
   post,
+  disabled = false,
 }: {
   post: PostType;
+  disabled?: boolean;
 }) {
   const { toast } = useToast();
   const { sharePost } = useSharePost();
   const t = useTranslations("blog.share");
+  const tBlog = useTranslations("blog");
 
   const [shareUrl, setShareUrl] = React.useState("");
 
@@ -172,6 +175,19 @@ export const ShareButton = memo(function ShareButton({
       },
     },
   ];
+
+  if (disabled) {
+    return (
+      <button
+        disabled
+        title={tBlog("actionsDisabledInPreview")}
+        className="flex flex-col items-center justify-center text-gray-400 p-2 rounded-lg transition-colors duration-200 outline-none opacity-50 cursor-not-allowed"
+      >
+        <Share2 className="h-5 w-5" />
+        <span className="text-xs mt-1">{post.sharesCount || 0}</span>
+      </button>
+    );
+  }
 
   return (
     <DropdownMenu>

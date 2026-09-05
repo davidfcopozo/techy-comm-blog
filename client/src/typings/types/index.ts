@@ -47,6 +47,7 @@ export type CategoryType = CategoryInterface;
 export type CommentSectionPropsType = {
   comments: string[];
   post: PostType;
+  isPreview?: boolean;
 };
 
 export type CommentProps = {

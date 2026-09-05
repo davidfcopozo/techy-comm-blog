@@ -19,19 +19,29 @@ export const visitsCounter = async (
     if (mongoose.Types.ObjectId.isValid(slugOrId)) {
       post = await Post.findById(slugOrId).populate("postedBy");
     } else {
-      post = await Post.findOne({ slug: slugOrId }).populate("postedBy");
+      post = await Post.findOne({
+        $or: [{ slug: slugOrId }, { slug: slugOrId.toLowerCase() }],
+      }).populate("postedBy");
     }
 
-    if (post && post?.postedBy?.toString() !== req.user?.userId) {
+    if (!post) {
+      throw new NotFound("Post not found");
+    }
+
+    const postAuthorId =
+      (post?.postedBy as any)?._id?.toString() || post?.postedBy?.toString();
+    const currentUserId = req.userId || req.user?.userId;
+
+    if (
+      post &&
+      post.status === "published" &&
+      postAuthorId !== currentUserId
+    ) {
       await Post.findByIdAndUpdate(
         post._id,
         { $inc: { visits: 1 } },
         { new: true }
       );
-    }
-
-    if (!post) {
-      throw new NotFound("Post not found");
     }
 
     next();

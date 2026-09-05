@@ -7,22 +7,18 @@ const useUserPosts = (userId: string) => {
     error: postsError,
     isFetching: arePostsFetching,
     isLoading: arePostsLoading,
-  } = useFetchRequest(["posts"], `/api/posts`);
+  } = useFetchRequest(["user-posts"], userId ? "/api/posts/my-posts" : null, {
+    staleTime: 0,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: true,
+  });
 
   const blogPosts = Array.isArray(posts?.data)
-    ? posts.data
-        .filter((post: PostType) => {
-          if (!userId) return false;
-          const authorId =
-            post?.postedBy?._id?.toString() ||
-            (typeof post?.postedBy === "string" ? post.postedBy : "");
-          return authorId === userId;
-        })
-        .sort(
-          (a: PostType, b: PostType) =>
-            new Date(String(b.createdAt ?? new Date())).getTime() -
-            new Date(String(a.createdAt ?? new Date())).getTime()
-        )
+    ? [...posts.data].sort(
+        (a: PostType, b: PostType) =>
+          new Date(String(b.createdAt ?? new Date())).getTime() -
+          new Date(String(a.createdAt ?? new Date())).getTime()
+      )
     : [];
   return { blogPosts, arePostsFetching, arePostsLoading, postsError };
 };

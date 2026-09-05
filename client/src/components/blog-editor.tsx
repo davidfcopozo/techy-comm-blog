@@ -15,6 +15,7 @@ import { useToast } from "./ui/use-toast";
 import { useNavigationGuard } from "@/hooks/useNavigationGuard";
 import { UnsavedChangesDialog } from "./unsaved-changes-dialog";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 
 const TiptapBlogEditor = dynamic(() => import("./tiptap-blog-editor"), {
   ssr: false,
@@ -43,10 +44,22 @@ const BlogEditor: FC<BlogEditorProps> = ({
   isPostLoading = false,
 }) => {
   const t = useTranslations("editor");
+  const router = useRouter();
   const [isEditorLoaded, setIsEditorLoaded] = useState(false);
-  const [currentStatus, setCurrentStatus] = useState<
-    "draft" | "published" | "unpublished"
-  >(initialPost?.status || "draft");
+  const {
+    temporaryCoverImage,
+    postData,
+    currentStatus,
+    setCurrentStatus,
+    updatePostState,
+    handleSubmit,
+    handleContentChange,
+    handleImageUpload,
+    handleCoverImagePick,
+    hasUnsavedChanges,
+    isSaving,
+    saveError,
+  } = useBlogEditor({ initialPost, slug });
 
   const { theme } = useTheme();
   const { toast } = useToast();
@@ -56,17 +69,12 @@ const BlogEditor: FC<BlogEditorProps> = ({
   }, [theme]);
   const handleSave = (status: "draft" | "published" | "unpublished") => {
     handleSubmit(status);
-    // Update the current status immediately for UI feedback
-    setCurrentStatus(status);
   };
   const handlePreview = async () => {
     if (slug) {
       if (hasUnsavedChanges()) {
         try {
-          await handleSubmit(currentStatus);
-          setTimeout(() => {
-            window.open(`/preview/${slug}`, "_blank");
-          }, 500);
+          await handleSubmit(currentStatus, { isPreview: true });
         } catch (error) {
           toast({
             variant: "destructive",
@@ -75,13 +83,12 @@ const BlogEditor: FC<BlogEditorProps> = ({
           });
         }
       } else {
-        window.open(`/preview/${slug}`, "_blank");
+        router.push(`/preview/${slug}`);
       }
     } else if (hasPreviewableContent()) {
       // If no slug but has content, save as draft first then preview
       try {
-        // Save as draft first
-        await handleSubmit("draft");
+        await handleSubmit("draft", { isPreview: true });
         toast({
           title: t("savingDraft"),
           description: t("savingDraftDescription"),
@@ -102,18 +109,6 @@ const BlogEditor: FC<BlogEditorProps> = ({
       });
     }
   };
-  const {
-    temporaryCoverImage,
-    postData,
-    updatePostState,
-    handleSubmit,
-    handleContentChange,
-    handleImageUpload,
-    handleCoverImagePick,
-    hasUnsavedChanges,
-    isSaving,
-    saveError,
-  } = useBlogEditor({ initialPost, slug });
 
   const { title, content, coverImage, tags, categories } = postData;
 
@@ -124,9 +119,11 @@ const BlogEditor: FC<BlogEditorProps> = ({
       updatePostState("coverImage", initialPost.coverImage || null);
       updatePostState("categories", initialPost.categories || []);
       updatePostState("tags", initialPost.tags || []);
-      setCurrentStatus(initialPost.status || "draft");
+      if (initialPost.status) {
+        setCurrentStatus(initialPost.status);
+      }
     }
-  }, [initialPost, updatePostState]);
+  }, [initialPost, updatePostState, setCurrentStatus]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -203,6 +200,7 @@ const BlogEditor: FC<BlogEditorProps> = ({
         slug={slug || undefined}
         onPreview={handlePreview}
         hasContent={hasPreviewableContent()}
+        onBack={() => navigateWithGuard("/dashboard")}
       />
       <main>
         <div className="flex-column md:flex">

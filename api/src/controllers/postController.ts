@@ -192,28 +192,51 @@ export const getPostBySlugOrId = async (
   const { slugOrId } = req.params;
   const { user: { userId: currentUserId } = { userId: null }, headers } = req;
 
-  const headerUserId =
+  const rawHeaderUserId =
     headers["x-user-id"] || headers["X-User-ID"] || headers["X-User-Id"];
+  const headerUserId =
+    typeof rawHeaderUserId === "string"
+      ? rawHeaderUserId
+      : Array.isArray(rawHeaderUserId)
+      ? rawHeaderUserId[0]
+      : null;
+
+  const authUserId = req.userId || currentUserId || headerUserId;
 
   try {
     let post: PostType | null;
 
-    if (mongoose.Types.ObjectId.isValid(slugOrId)) {
+    const idOrSlugFilter = mongoose.Types.ObjectId.isValid(slugOrId)
+      ? { _id: slugOrId }
+      : { $or: [{ slug: slugOrId }, { slug: slugOrId.toLowerCase() }] };
+
+    const authorIdFilter =
+      authUserId && mongoose.Types.ObjectId.isValid(authUserId)
+        ? new mongoose.Types.ObjectId(authUserId)
+        : authUserId;
+
+    if (authUserId) {
       post = await Post.findOne({
-        _id: slugOrId,
-        status: "published",
+        $and: [
+          idOrSlugFilter,
+          { $or: [{ status: "published" }, { postedBy: authorIdFilter }] },
+        ],
       })
         .populate("postedBy")
+        .populate("categories")
         .populate("likesCount")
         .populate("bookmarksCount")
         .populate("viewsCount")
         .populate("sharesCount");
     } else {
       post = await Post.findOne({
-        slug: slugOrId,
-        status: "published",
+        $and: [
+          idOrSlugFilter,
+          { status: "published" },
+        ],
       })
         .populate("postedBy")
+        .populate("categories")
         .populate("likesCount")
         .populate("bookmarksCount")
         .populate("viewsCount")
@@ -229,16 +252,18 @@ export const getPostBySlugOrId = async (
     const userAgent = req.get("User-Agent");
     const referrer = req.get("Referrer");
 
-    AnalyticsService.recordPostView({
-      postId: post._id.toString(),
-      userId,
-      ipAddress,
-      userAgent,
-      referrer,
-      source: referrer ? "referral" : "direct",
-    }).catch((error) => {
-      console.error("Error recording post view:", error);
-    });
+    if (post.status === "published") {
+      AnalyticsService.recordPostView({
+        postId: post._id.toString(),
+        userId,
+        ipAddress,
+        userAgent,
+        referrer,
+        source: referrer ? "referral" : "direct",
+      }).catch((error) => {
+        console.error("Error recording post view:", error);
+      });
+    }
 
     let enhancedPost = post;
     if (req.userId) {
@@ -419,9 +444,11 @@ export const updatePostBySlugOrId = async (
   } = req;
 
   try {
-    const oldPost = await Post.findOne({
-      $or: [{ slug: slugOrId }, { _id: slugOrId }],
-    });
+    const postFilter = mongoose.Types.ObjectId.isValid(slugOrId)
+      ? { _id: slugOrId }
+      : { $or: [{ slug: slugOrId }, { slug: slugOrId.toLowerCase() }] };
+
+    const oldPost = await Post.findOne(postFilter);
 
     if (!oldPost) {
       throw new NotFound("Post not found");
@@ -510,9 +537,11 @@ export const deletePostBySlugOrId = async (
   } = req;
 
   try {
-    const post = await Post.findOne({
-      $or: [{ slug: slugOrId }, { _id: slugOrId }],
-    });
+    const postFilter = mongoose.Types.ObjectId.isValid(slugOrId)
+      ? { _id: slugOrId }
+      : { $or: [{ slug: slugOrId }, { slug: slugOrId.toLowerCase() }] };
+
+    const post = await Post.findOne(postFilter);
 
     if (!post) {
       throw new NotFound(`No post found with slug or id ${slugOrId}`);
@@ -564,6 +593,10 @@ export const toggleLike = async (
 
     if (!post) {
       throw new NotFound("This post doesn't exist or has been deleted");
+    }
+
+    if (post.status !== "published") {
+      throw new BadRequest("Interactions are disabled for unpublished posts");
     }
 
     const ipAddress = req.ip || req.connection.remoteAddress;
@@ -643,6 +676,10 @@ export const toggleBookmark = async (
       throw new NotFound("This post doesn't exist or has been deleted");
     }
 
+    if (post.status !== "published") {
+      throw new BadRequest("Interactions are disabled for unpublished posts");
+    }
+
     const ipAddress = req.ip || req.connection.remoteAddress;
     const userAgent = req.get("User-Agent");
 
@@ -705,7 +742,9 @@ export const previewPost = async (
     if (mongoose.Types.ObjectId.isValid(slugOrId)) {
       post = await Post.findById(slugOrId).populate("postedBy");
     } else {
-      post = await Post.findOne({ slug: slugOrId }).populate("postedBy");
+      post = await Post.findOne({
+        $or: [{ slug: slugOrId }, { slug: slugOrId.toLowerCase() }],
+      }).populate("postedBy");
     }
 
     if (!post) {
@@ -778,6 +817,10 @@ export const sharePost = async (
 
     if (!post) {
       throw new NotFound("This post doesn't exist or has been deleted");
+    }
+
+    if (post.status !== "published") {
+      throw new BadRequest("Sharing is disabled for unpublished posts");
     }
 
     const ipAddress = req.ip || req.connection.remoteAddress;

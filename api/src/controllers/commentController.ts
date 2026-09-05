@@ -82,6 +82,10 @@ export const createComment = async (
       throw new NotFound("The post you're trying to comment on does not exist");
     }
 
+    if (post.status !== "published") {
+      throw new BadRequest("Comments are disabled for unpublished posts");
+    }
+
     const cleanContent = sanitizeContent(content);
 
     const comment = await Comment.create({

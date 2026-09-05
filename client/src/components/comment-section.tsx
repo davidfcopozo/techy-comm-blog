@@ -10,9 +10,11 @@ import { useTranslations } from "next-intl";
 export default function CommentSection({
   comments,
   post,
+  isPreview = false,
 }: CommentSectionPropsType) {
   const queryClient = useQueryClient();
   const t = useTranslations("comments");
+  const tBlog = useTranslations("blog");
 
   const [cachedComments, setCachedComments] = useState<CommentInterface[]>(
     () => queryClient.getQueryData<CommentInterface[]>(["comments"]) || []
@@ -76,7 +78,15 @@ export default function CommentSection({
         <h2 id="comments-section" className="text-2xl font-bold">
           {t("title")}
         </h2>
-        <CommentBox post={post} />
+        {isPreview ? (
+          <div className="p-6 rounded-lg border border-dashed text-center text-muted-foreground bg-muted/30">
+            <p className="font-medium text-sm">
+              {tBlog("commentsDisabledInPreview")}
+            </p>
+          </div>
+        ) : (
+          <CommentBox post={post} />
+        )}
         <div className="grid gap-6">
           {displayComments && displayComments.length >= 1 ? (
             displayComments

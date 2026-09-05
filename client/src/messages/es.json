@@ -313,6 +313,8 @@
     "follow": "Seguir",
     "unfollow": "Dejar de seguir",
     "blogCoverAlt": "Portada del Blog",
+    "actionsDisabledInPreview": "Las acciones están deshabilitadas en modo vista previa",
+    "commentsDisabledInPreview": "Los comentarios están deshabilitados en modo vista previa",
     "share": {
       "sharePost": "Compartir publicación",
       "nativeShare": "Nativamente",
@@ -346,6 +348,7 @@
     "relatedPosts": "Publicaciones Relacionadas"
   },
   "editor": {
+    "backToPosts": "Volver a publicaciones",
     "coverImage": "Imagen de Portada",
     "uploadNew": "Subir Nueva",
     "browseGallery": "Explorar Galería",
@@ -361,6 +364,7 @@
     "updating": "Actualizando...",
     "publish": "Publicar",
     "publishing": "Publicando...",
+    "published": "Publicado",
     "unpublish": "Despublicar",
     "undo": "Deshacer",
     "redo": "Rehacer",

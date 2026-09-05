@@ -15,7 +15,7 @@ import Link from "next/link";
 import { EngagementButton } from "./engagement-button";
 import { Card, CardFooter } from "./ui/card";
 import { AuthModal } from "./auth-modal";
-import { memo } from "react";
+import { memo, useEffect, useState } from "react";
 import { UserAvatar } from "./ui/user-avatar";
 import { useLocale, useTranslations } from "next-intl";
 
@@ -43,16 +43,30 @@ export const BlogPostCard = memo(function BlogPostCard({
   } = useInteractions(post);
   let description = extractFirstParagraphText(content as string);
 
+  const safeCoverImage =
+    coverImage &&
+    typeof coverImage === "string" &&
+    !coverImage.includes("fallback-featured-image.webp")
+      ? coverImage
+      : "/default-image.jpg";
+
+  const [imgSrc, setImgSrc] = useState(safeCoverImage);
+
+  useEffect(() => {
+    setImgSrc(safeCoverImage);
+  }, [safeCoverImage]);
+
   return (
     <Card className={`overflow-hidden border-none shadow-lg ${className}`}>
       <div className="flex flex-col md:flex-row">
         <div className="relative h-48 w-full  md:w-2/5">
           <Image
-            src={coverImage as string}
+            src={imgSrc}
             alt={title}
             fill
             className="object-cover"
             sizes="(max-width: 768px) 100vw, 40vw"
+            onError={() => setImgSrc("/default-image.jpg")}
           />
           <div className="absolute bottom-3 left-3 flex items-center gap-1 rounded-full bg-black/70 px-2 py-1 text-xs text-white">
             <Clock className="h-3 w-3" />

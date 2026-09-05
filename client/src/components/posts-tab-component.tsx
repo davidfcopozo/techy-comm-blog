@@ -255,7 +255,11 @@ const PostsTabContent = memo(
                     <TableRow key={post._id}>
                       <TableCell className="font-medium">
                         <Link
-                          href={`/${post.postedBy.username}/${post.slug}`}
+                          href={
+                            post.status === "published"
+                              ? `/${post.postedBy?.username || ""}/${post.slug}`
+                              : `/preview/${post.slug}`
+                          }
                           className="hover:underline"
                         >
                           {post?.title}

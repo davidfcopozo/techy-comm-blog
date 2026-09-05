@@ -1,4 +1,4 @@
-import { useState, useCallback, ChangeEvent, useEffect } from "react";
+import { useState, useCallback, ChangeEvent, useEffect, useRef } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { supabase } from "../supabaseConfig";
@@ -16,6 +16,7 @@ import { clearCache } from "@/utils/request-cache";
 import { arraysEqual } from "@/utils/formats";
 
 export const useBlogEditor = ({ initialPost, slug }: UseBlogEditorProps) => {
+  const pendingPreviewRef = useRef<boolean>(false);
   const [temporaryCoverImage, setTemporaryCoverImage] = useState<File | null>(
     null
   );
@@ -25,21 +26,25 @@ export const useBlogEditor = ({ initialPost, slug }: UseBlogEditorProps) => {
   const queryClient = useQueryClient();
 
   const [postData, setPostData] = useState({
-    title: "",
-    content: "",
-    coverImage: null as string | null,
-    categories: [] as CategoryInterface[],
-    tags: [] as string[],
+    title: initialPost?.title || "",
+    content: initialPost?.content || "",
+    coverImage: initialPost?.coverImage || null,
+    categories: (initialPost?.categories as CategoryInterface[]) || [],
+    tags: initialPost?.tags || [],
   });
 
   // Track the last saved state to compare against for changes
   const [lastSavedData, setLastSavedData] = useState({
-    title: "",
-    content: "",
-    coverImage: null as string | null,
-    categories: [] as CategoryInterface[],
-    tags: [] as string[],
+    title: initialPost?.title || "",
+    content: initialPost?.content || "",
+    coverImage: initialPost?.coverImage || null,
+    categories: (initialPost?.categories as CategoryInterface[]) || [],
+    tags: initialPost?.tags || [],
   });
+
+  const [currentStatus, setCurrentStatus] = useState<
+    "draft" | "published" | "unpublished"
+  >(initialPost?.status || "draft");
 
   const { title, content, coverImage, categories, tags } = postData;
 
@@ -59,9 +64,31 @@ export const useBlogEditor = ({ initialPost, slug }: UseBlogEditorProps) => {
     error: newPostError,
   } = usePostRequest({
     url: "/api/posts",
-    onSuccess: (data) => {
+    onSuccess: (data: any) => {
       clearCache("/api/posts");
-      queryClient.invalidateQueries({ queryKey: ["posts"], exact: true });
+      clearCache("/api/posts/my-posts");
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      queryClient.invalidateQueries({ queryKey: ["user-posts"] });
+
+      if (data?.status) {
+        setCurrentStatus(data.status);
+      }
+
+      if (data && data._id) {
+        queryClient.setQueryData(["user-posts"], (old: any) => {
+          if (!old) return old;
+          if (Array.isArray(old)) {
+            return [data, ...old.filter((p: any) => p._id !== data._id)];
+          }
+          if (old.data && Array.isArray(old.data)) {
+            return {
+              ...old,
+              data: [data, ...old.data.filter((p: any) => p._id !== data._id)],
+            };
+          }
+          return old;
+        });
+      }
 
       // Update lastSavedData to current state to reset change indicator
       setLastSavedData({
@@ -72,26 +99,40 @@ export const useBlogEditor = ({ initialPost, slug }: UseBlogEditorProps) => {
         tags,
       });
 
-      // Redirect to edit page instead of resetting state
+      const isPreview = pendingPreviewRef.current;
+      pendingPreviewRef.current = false;
+
+      // Redirect to preview or edit page
       if (data?.slug) {
-        toast({
-          title: "Success",
-          description:
-            "Blog post created successfully! Redirecting to edit page...",
-        });
-        // Add a small delay to ensure the toast is shown before redirect
-        setTimeout(() => {
-          router.push(`/edit-post/${data.slug}`);
-        }, 100);
+        if (isPreview) {
+          toast({
+            title: "Success",
+            description: "Blog post saved! Opening preview...",
+          });
+          setTimeout(() => {
+            router.push(`/preview/${data.slug}`);
+          }, 100);
+        } else {
+          toast({
+            title: "Success",
+            description:
+              "Blog post created successfully! Redirecting to edit page...",
+          });
+          setTimeout(() => {
+            router.push(`/edit-post/${data.slug}`);
+          }, 100);
+        }
       } else {
         toast({
           title: "Success",
-          description:
-            "Blog post created successfully, but couldn't redirect to edit page",
+          description: isPreview
+            ? "Blog post saved, but couldn't open preview"
+            : "Blog post created successfully, but couldn't redirect to edit page",
         });
       }
     },
     onError: () => {
+      pendingPreviewRef.current = false;
       const previousPosts = queryClient.getQueryData(["posts"]);
       queryClient.setQueryData(["posts"], previousPosts);
     },
@@ -117,11 +158,50 @@ export const useBlogEditor = ({ initialPost, slug }: UseBlogEditorProps) => {
     error: updatePostError,
   } = usePatchRequest({
     url: `/api/posts/${initialPost?._id}`,
-    onSuccess: (updatePostData, variables) => {
+    onSuccess: (updatePostData: any, variables: any) => {
       clearCache("/api/posts");
-      queryClient.invalidateQueries({ queryKey: ["posts"], exact: true });
+      clearCache("/api/posts/my-posts");
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      queryClient.invalidateQueries({ queryKey: ["user-posts"] });
+
+      const newStatus = updatePostData?.status || variables?.status;
+      if (newStatus) {
+        setCurrentStatus(newStatus);
+      }
+
+      // Patch only the specific post by _id in the user-posts cache
+      const updatedId = updatePostData?._id?.toString() || initialPost?._id?.toString();
+      if (updatedId) {
+        queryClient.setQueryData(["user-posts"], (old: any) => {
+          if (!old) return old;
+          const patchItem = (item: any) => {
+            // Only match by _id to avoid accidentally updating other posts
+            if (item._id?.toString() === updatedId) {
+              return {
+                ...item,
+                ...(updatePostData || {}),
+                status: newStatus || item.status,
+              };
+            }
+            return item;
+          };
+
+          if (Array.isArray(old)) {
+            return old.map(patchItem);
+          }
+          if (old.data && Array.isArray(old.data)) {
+            return {
+              ...old,
+              data: old.data.map(patchItem),
+            };
+          }
+          return old;
+        });
+      }
 
       if (slug) {
+        queryClient.invalidateQueries({ queryKey: ["post", slug] });
+        clearCache(`/api/posts/${slug}`);
         queryClient.invalidateQueries({
           queryKey: ["preview-post", slug],
         });
@@ -137,16 +217,32 @@ export const useBlogEditor = ({ initialPost, slug }: UseBlogEditorProps) => {
         tags,
       });
 
-      toast({
-        title: "Success",
-        description: "Blog post updated successfully",
-      });
+      const isPreview = pendingPreviewRef.current;
+      pendingPreviewRef.current = false;
+
+      if (isPreview && slug) {
+        toast({
+          title: "Success",
+          description: "Post updated! Opening preview...",
+        });
+        setTimeout(() => {
+          router.push(`/preview/${slug}`);
+        }, 100);
+      } else {
+        toast({
+          title: "Success",
+          description: "Blog post updated successfully",
+        });
+      }
       // For updates, we're already on the edit page, so no need to redirect
       // Just invalidate queries to refresh the data
     },
     onError: (error, variables, context) => {
       if (context?.previousData) {
         queryClient.setQueryData(["posts"], context.previousData);
+      }
+      if ((context as any)?.previousUserPosts) {
+        queryClient.setQueryData(["user-posts"], (context as any).previousUserPosts);
       }
       toast({
         variant: "destructive",
@@ -155,26 +251,18 @@ export const useBlogEditor = ({ initialPost, slug }: UseBlogEditorProps) => {
       });
     },
     onMutate: async (newPost: UpdatePostPayload) => {
+      // Cancel any outstanding refetches so they don't overwrite optimistic updates
       await queryClient.cancelQueries({ queryKey: ["posts"] });
+      await queryClient.cancelQueries({ queryKey: ["user-posts"] });
 
-      const previousData = queryClient.getQueryData<UpdatePostPayload[]>([
-        "posts",
-      ]);
+      const previousData = queryClient.getQueryData(["posts"]);
+      const previousUserPosts = queryClient.getQueryData(["user-posts"]);
 
-      if (previousData) {
-        queryClient.setQueryData<UpdatePostPayload>(
-          ["posts", newPost?._id],
-          (old) => ({
-            ...old,
-            ...newPost,
-          })
-        );
-      }
-
-      return { previousData };
+      return { previousData, previousUserPosts };
     },
     onSettled: (data, error, variables, context) => {
       queryClient.invalidateQueries({ queryKey: ["posts"] });
+      queryClient.invalidateQueries({ queryKey: ["user-posts"] });
     },
   });
 
@@ -320,8 +408,14 @@ export const useBlogEditor = ({ initialPost, slug }: UseBlogEditorProps) => {
     }
   }, [newPostStatus, toast]);
   const handleSubmit = useCallback(
-    async (status: "draft" | "published" | "unpublished") => {
+    async (
+      status: "draft" | "published" | "unpublished",
+      options?: { isPreview?: boolean }
+    ) => {
+      pendingPreviewRef.current = Boolean(options?.isPreview);
+
       if (!title) {
+        pendingPreviewRef.current = false;
         return toast({
           variant: "destructive",
           title: "Blog Post Failed",
@@ -330,6 +424,7 @@ export const useBlogEditor = ({ initialPost, slug }: UseBlogEditorProps) => {
       }
 
       if (!content || content === "<p><br></p>") {
+        pendingPreviewRef.current = false;
         return toast({
           variant: "destructive",
           title: "Blog Post Failed",
@@ -393,10 +488,15 @@ export const useBlogEditor = ({ initialPost, slug }: UseBlogEditorProps) => {
               _id: initialPost?._id?.toString(),
             });
           } else {
-            toast({
-              title: "No Changes",
-              description: "No changes were made to the post.",
-            });
+            if (pendingPreviewRef.current && slug) {
+              pendingPreviewRef.current = false;
+              router.push(`/preview/${slug}`);
+            } else {
+              toast({
+                title: "No Changes",
+                description: "No changes were made to the post.",
+              });
+            }
           }
         }
       } else {
@@ -479,16 +579,21 @@ export const useBlogEditor = ({ initialPost, slug }: UseBlogEditorProps) => {
     lastSavedData,
   ]);
 
-  // Initialize lastSavedData when initialPost is loaded
+  // Initialize postData and lastSavedData when initialPost is loaded
   useEffect(() => {
     if (initialPost) {
-      setLastSavedData({
+      const initialData = {
         title: initialPost.title || "",
         content: initialPost.content || "",
         coverImage: initialPost.coverImage || null,
-        categories: initialPost.categories || [],
+        categories: (initialPost.categories as CategoryInterface[]) || [],
         tags: initialPost.tags || [],
-      });
+      };
+      setPostData(initialData);
+      setLastSavedData(initialData);
+      if (initialPost.status) {
+        setCurrentStatus(initialPost.status);
+      }
     }
   }, [initialPost]);
   return {
@@ -500,6 +605,8 @@ export const useBlogEditor = ({ initialPost, slug }: UseBlogEditorProps) => {
     handleCoverImagePick,
     updatePostState,
     postData,
+    currentStatus,
+    setCurrentStatus,
     hasUnsavedChanges,
     // Return save status for better UX
     isSaving: newPostStatus === "pending" || updatePostStatus === "pending",

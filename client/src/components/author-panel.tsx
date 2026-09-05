@@ -42,6 +42,7 @@ export const AuthorPanel = memo(function AuthorPanel({
   isFollowed,
   isPending,
   isPostOwner = false,
+  isPreview = false,
 }: AuthorPanelProps) {
   const t = useTranslations("blog");
   const fullName = `${firstName} ${lastName}`;
@@ -127,8 +128,9 @@ export const AuthorPanel = memo(function AuthorPanel({
       <footer className="mt-4">
         {!isPostOwner && (
           <Button
-            onClick={handleFollowToggle}
-            disabled={isPending}
+            onClick={isPreview ? undefined : handleFollowToggle}
+            disabled={isPending || isPreview}
+            title={isPreview ? t("actionsDisabledInPreview") : undefined}
             className={`${
               isFollowed
                 ? "dark:text-amber-500 text-foreground dark:border-amber-500 border-foreground border-[1px] hover:bg-foreground hover:dark:text-background hover:text-background transition-all duration-300 following-button"
