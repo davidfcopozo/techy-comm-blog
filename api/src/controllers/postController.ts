@@ -84,7 +84,11 @@ export const getAllPosts = async (
 
   try {
     if (posts.length < 1) {
-      throw new NotFound("Posts not found");
+      return res.status(StatusCodes.OK).json({
+        success: true,
+        data: [],
+        count: 0,
+      });
     }
 
     const requestingUserId = currentUserId || headerUserId;
@@ -347,7 +351,9 @@ export const getPostsByCategory = async (
     }).populate("postedBy");
 
     if (posts.length < 1) {
-      throw new NotFound("Posts not found");
+      return res
+        .status(StatusCodes.OK)
+        .json({ success: true, data: [], count: 0 });
     }
 
     res

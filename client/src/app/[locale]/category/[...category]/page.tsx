@@ -8,15 +8,18 @@ import { useCallback, useEffect, useMemo, useState, use } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { Search, BookOpen } from "lucide-react";
 import SearchResults from "@/components/search-results";
 import CategoriesSkeleton from "@/components/categories-skeleton";
+import { Button } from "@/components/ui/button";
+import { useTranslations } from "next-intl";
 
 export default function Category(props: {
   params: Promise<{ category: string }>;
 }) {
   const params = use(props.params);
   const cat = decodeURI(params.category);
+  const t = useTranslations("blog");
   const { toast } = useToast();
 
   const categoryToDisplay = convertSlugToName(cat);
@@ -99,8 +102,21 @@ export default function Category(props: {
               />
             ))
           ) : (
-            <div className="w-full flex justify-center items-center">
-              <p>Sorry, no posts to display!</p>
+            <div className="flex flex-col items-center justify-center py-24 sm:py-32 px-6 text-center rounded-xl border border-dashed bg-muted/20 mt-8 min-h-[420px]">
+              <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-6 text-muted-foreground">
+                <BookOpen className="w-8 h-8" />
+              </div>
+              <h3 className="text-xl sm:text-2xl font-semibold mb-3">
+                {t("noPostsFound")}
+              </h3>
+              <p className="text-sm sm:text-base text-muted-foreground max-w-md mb-8 leading-relaxed">
+                {t("noPostsCategoryDescription")}
+              </p>
+              <Button asChild variant="outline" size="lg">
+                <Link href="/">
+                  {t("browseAllPosts")}
+                </Link>
+              </Button>
             </div>
           )}
         </main>
