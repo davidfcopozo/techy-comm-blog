@@ -6,7 +6,7 @@ const websiteRegex =
   /^(https?:\/\/)?(www\.)?[a-zA-Z0-9-]+(\.[a-zA-Z]{2,})+([\/\w \.-]*)*\/?$/;
 const topicNameRegex = /^[a-zA-Z0-9]+[a-zA-Z0-9-_ ]{0,48}[a-zA-Z0-9]+$/;
 const topicDescriptionRegex = /^[a-zA-Z0-9]+[a-zA-Z0-9-_ ]{5,96}[a-zA-Z0-9]+$/;
-const categoryNameRegex = /^[a-zA-Z0-9]+[a-zA-Z0-9-_ ]{0,48}[a-zA-Z0-9]+$/;
+const categoryNameRegex = /^[a-zA-Z0-9#+][a-zA-Z0-9-_ .+#/]{0,49}$/;
 
 type StringProp = string;
 
@@ -30,6 +30,9 @@ export const sanitizeSlug = (text: string): string => {
   return text
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
+    .replace(/c\+\+/gi, "cpp")
+    .replace(/c#/gi, "csharp")
+    .replace(/\.net/gi, "dotnet")
     .replace(/ß/g, "ss")
     .replace(/['’]/g, "")
     .toLowerCase()
