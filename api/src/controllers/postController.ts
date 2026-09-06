@@ -5,7 +5,7 @@ import { StatusCodes } from "http-status-codes";
 import { RequestWithUserInfo } from "../typings/models/user";
 import { NotFound, BadRequest, Unauthenticated } from "../errors/index";
 import { PostType } from "../typings/types";
-import { slugValidator } from "../utils/validators";
+import { slugValidator, sanitizeSlug } from "../utils/validators";
 import mongoose from "mongoose";
 import { sanitizeContent } from "../utils/sanitize-content";
 import { CategoryInterface } from "../typings/models/category";
@@ -24,9 +24,8 @@ export const createPost = async (
       throw new BadRequest("Title and content are required");
     }
 
-    let slug = req.body.slug
-      ? req.body.slug.toLowerCase().split(" ").join("-")
-      : req.body.title.toLowerCase().split(" ").join("-");
+    const rawSlug = req.body.slug?.trim() ? req.body.slug : req.body.title;
+    let slug = sanitizeSlug(rawSlug);
 
     if (!slugValidator(slug)) {
       throw new BadRequest(
@@ -486,7 +485,15 @@ export const updatePostBySlugOrId = async (
     const setFields: any = {};
     if (title !== undefined) setFields.title = title;
     if (content !== undefined) setFields.content = sanitizeContent(content);
-    if (slug !== undefined) setFields.slug = slug;
+    if (slug !== undefined) {
+      const sanitizedSlug = sanitizeSlug(slug);
+      if (!slugValidator(sanitizedSlug)) {
+        throw new BadRequest(
+          "Slug should contain only letters, numbers, or hyphens and should not start or end with a hyphen"
+        );
+      }
+      setFields.slug = sanitizedSlug;
+    }
     if (bookmarks !== undefined) setFields.bookmarks = bookmarks;
     if (comments !== undefined) setFields.comments = comments;
     if (status !== undefined) setFields.status = status;
