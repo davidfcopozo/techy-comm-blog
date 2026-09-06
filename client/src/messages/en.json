@@ -805,10 +805,326 @@
     "passwordsMismatch": "Passwords do not match",
     "invalidEmailFormat": "Please enter a valid email",
     "usernameFormat": "Username can only contain letters, numbers, underscores and dashes",
+"commentLiked": "Your comment was liked",
+    "newMention": "You were mentioned in a post",
+    "notificationSettings": "Notification Settings",
+    "emailNotifications": "Email Notifications",
+    "pushNotifications": "Push Notifications",
+    "notificationsEnabled": "Notifications enabled",
+    "notificationsDisabled": "Notifications disabled"
+  },
+  "notificationSettings": {
+    "title": "Notification Settings",
+    "description": "Manage how you receive notifications about activity on your posts and mentions.",
+    "cardTitle": "Notification Preferences",
+    "cardDescription": "Choose how you want to be notified about different activities",
+    "loading": "Loading...",
+    "saving": "Saving...",
+    "savePreferences": "Save Preferences",
+    "notificationType": "Notification Type",
+    "inApp": "In-App",
+    "email": "Email",
+    "types": {
+      "mentions": {
+        "title": "Mentions",
+        "description": "When someone mentions you in a comment or reply"
+      },
+      "comments": {
+        "title": "Comments",
+        "description": "When someone comments on your posts"
+      },
+      "replies": {
+        "title": "Replies",
+        "description": "When someone replies to your comments"
+      },
+      "bookmarks": {
+        "title": "Bookmarks",
+        "description": "When someone bookmarks your posts"
+      },
+      "likes": {
+        "title": "Likes",
+        "description": "When someone likes your posts"
+      },
+      "follows": {
+        "title": "Follows",
+        "description": "When someone follows you"
+      }
+    },
+    "toasts": {
+      "preferencesUpdated": "Notification preferences updated successfully",
+      "updateFailed": "Failed to update notification preferences",
+      "loadingFailed": "Failed to load notification preferences"
+    }
+  },
+  "analytics": {
+    "tabs": {
+      "overview": "Overview",
+      "engagement": "Engagement",
+      "performance": "Performance"
+    },
+    "viewsOverTime": "Views Over Time",
+    "viewsOverTimeDescription": "Daily page views for the last 30 days",
+    "engagementMetrics": "Engagement Metrics",
+    "engagementMetricsDescription": "Likes, comments, and shares over time",
+    "engagementRateByCategory": "Engagement Rate by Category",
+    "engagementRateByCategoryDescription": "Average engagement per post category",
+    "performanceInsights": "Performance Insights",
+    "performanceInsightsDescription": "Key metrics and recommendations",
+    "averageEngagementRate": "Average Engagement Rate",
+    "averageViewsPerPost": "Average Views per Post",
+    "topPerformingCategory": "Top Performing Category",
+    "noCategories": "No categories",
+    "viewsTrendAnalysis": "Views Trend Analysis",
+    "viewsTrendAnalysisDescription": "Track your blog's view performance over time"
+  },
+  "charts": {
+    "day": "Day",
+    "dayWithNumber": "Day {number}",
+    "views": "Views",
+    "likes": "Likes",
+    "comments": "Comments",
+    "bookmarks": "Bookmarks",
+    "shares": "Shares"
+  },
+  "postPerformance": {
+    "totalViews": "Total Views",
+    "totalLikes": "Total Likes",
+    "bookmarks": "Bookmarks",
+    "comments": "Comments",
+    "shares": "Shares",
+    "fromLastMonth": "from last month",
+    "noHistoricalData": "no historical data",
+    "topPerformingPosts": "Top Performing Posts",
+    "topPerformingPostsDescription": "Posts ranked by total views",
+    "postPerformanceDetails": "Post Performance Details",
+    "postPerformanceDetailsDescription": "Detailed metrics for all your blog posts",
+    "searchPosts": "Search posts...",
+    "allCategories": "All Categories",
+    "sortBy": "Sort by",
+    "sortByViews": "Views",
+    "sortByLikes": "Likes",
+    "sortByBookmarks": "Bookmarks",
+    "sortByComments": "Comments",
+    "sortByDate": "Date",
+    "pickDateRange": "Pick a date range",
+    "post": "Post",
+    "category": "Category",
+    "published": "Published",
+    "engagement": "Engagement"
+  },
+  "errors": {
+    "pageNotFound": "Page Not Found",
+    "goHome": "Go Home",
+    "serverError": "Server Error",
+    "somethingWentWrong": "Something went wrong",
+    "tryAgain": "Try Again",
+    "unauthorized": "Unauthorized",
+    "forbidden": "Forbidden",
+    "badRequest": "Bad Request",
+    "tooManyRequests": "Too Many Requests",
+    "networkError": "Network Error",
+    "timeoutError": "Request Timeout",
+    "validationError": "Validation Error",
+    "notFound": "Not Found",
+    "internalError": "Internal Server Error",
+    "serviceUnavailable": "Service Unavailable"
+  },
+  "forms": {
+    "required": "This field is required",
+    "invalidEmail": "Please enter a valid email address",
+    "passwordTooShort": "Password must be at least 8 characters",
+    "passwordMismatch": "Passwords do not match",
+    "usernameTaken": "Username is already taken",
+    "emailTaken": "Email is already registered",
+    "invalidUrl": "Please enter a valid URL",
+    "fieldTooLong": "This field is too long",
+    "fieldTooShort": "This field is too short",
+    "invalidFormat": "Invalid format",
+    "selectOption": "Please select an option",
+    "uploadFailed": "Upload failed",
+    "fileTooLarge": "File is too large",
+    "invalidFileType": "Invalid file type",
+    "formSubmitted": "Form submitted successfully",
+    "formError": "Please correct the errors and try again",
+    "emailPlaceholder": "m@example.com",
+    "passwordPlaceholder": "Enter your password",
+    "firstNamePlaceholder": "John",
+    "lastNamePlaceholder": "Doe",
+    "usernamePlaceholder": "johndoe",
+    "registerEmailPlaceholder": "john.doe@example.com",
+    "createPasswordPlaceholder": "Create a password",
+    "confirmPasswordPlaceholder": "Confirm your password"
+  },
+  "language": {
+    "selectLanguage": "Select Language",
+    "english": "English",
+    "spanish": "Español",
+    "languageChanged": "Language changed successfully",
+    "languageUpdated": "Language preference updated to"
+  },
+  "authModal": {
+    "likeTitle": "Like this post",
+    "likeDescription": "Join the community to like posts and engage with content you love.",
+    "bookmarkTitle": "Save this post",
+    "bookmarkDescription": "Create an account to bookmark posts and build your personal reading list.",
+    "commentTitle": "Join the conversation",
+    "commentDescription": "Sign in to comment and share your thoughts with the community.",
+    "followTitle": "Follow this author",
+    "followDescription": "Create an account to follow authors and stay updated with their latest posts.",
+    "replyTitle": "Reply to comment",
+    "replyDescription": "Sign in to reply to comments and join the discussion.",
+    "liking": "liking",
+    "bookmarking": "bookmarking",
+    "commenting": "commenting",
+    "followingAuthors": "following authors",
+    "replyingToComments": "replying to comments",
+    "welcomeMessage": "Welcome!",
+    "welcomeBack": "Welcome back!",
+    "signInSuccess": "You've successfully signed in. You can now {action}.",
+    "accountCreated": "Account created successfully. You can now {action}.",
+    "signInTitle": "Sign in to your account",
+    "signInDescription": "Enter your email and password to continue",
+    "signingIn": "Signing in...",
+    "dontHaveAccount": "Don't have an account?",
+    "createOneHere": "Create one here",
+    "registerTitle": "Create your account",
+    "registerDescription": "Fill in your details to get started",
+    "creatingAccount": "Creating account...",
+    "createAccount": "Create Account",
+    "firstNameRequired": "First name is required",
+    "lastNameRequired": "Last name is required",
+    "usernameRequired": "Username is required",
+    "emailRequired": "Email is required",
+    "passwordRequired": "Password is required",
+    "passwordMinLength": "Password must be at least 8 characters",
+    "passwordsMismatch": "Passwords do not match",
+    "invalidEmailFormat": "Please enter a valid email",
+    "usernameFormat": "Username can only contain letters, numbers, underscores and dashes",
     "signInFailed": "Sign in failed",
     "socialSignInError": "Could not sign in with {provider}. Please try again.",
     "invalidCredentials": "Invalid email or password. Please try again.",
     "genericSignInError": "Something went wrong. Please try again.",
     "registrationFailed": "Registration failed"
+  },
+  "termsPage": {
+    "title": "Terms of Service",
+    "subtitle": "Please read these terms carefully. TechyComm is an open source platform provided 'as is' with strict limitations of liability under EU and Spanish laws.",
+    "lastUpdated": "Last updated: September 6, 2026",
+    "sections": {
+      "identification": {
+        "title": "1. Open Source Project & Platform Operator",
+        "content": "TechyComm is an open-source educational and technical blogging platform maintained by the TechyComm open-source community, based in Spain. Official inquiries can be directed to me@davidfrancisco.dev."
+      },
+      "acceptance": {
+        "title": "2. Acceptance of Terms",
+        "content": "By accessing TechyComm, using its source code, creating an account, or reading its content, you agree to these Terms of Service, operating under the laws of Spain and the European Union. If you do not agree, you must cease using the platform."
+      },
+      "openSourceDisclaimer": {
+        "title": "3. Open Source 'AS IS' Disclaimer & No Warranty",
+        "content": "TechyComm and all associated source code, articles, code snippets, and tools are provided strictly 'AS IS' and 'AS AVAILABLE', without warranty of any kind, express or implied (including warranties of merchantability, fitness for a particular purpose, accuracy, or uptime). You execute any code snippets or tutorials at your own risk."
+      },
+      "account": {
+        "title": "4. User Accounts & Responsibilities",
+        "content": "Users are solely responsible for maintaining the confidentiality of their credentials and for all actions conducted through their accounts. You must notify us immediately of any unauthorized access."
+      },
+      "intellectualProperty": {
+        "title": "5. Intellectual Property & Open Source Licensing",
+        "content": "TechyComm's underlying software is released as open source. Articles, posts, and user contributions belong to their respective authors, who grant TechyComm a non-exclusive license to host and display the content."
+      },
+      "acceptableUse": {
+        "title": "6. Acceptable Use Policy",
+        "content": "Users must not engage in unlawful acts, deploy malicious software, attempt unauthorized system access, post spam/hate speech, or breach EU/Spanish legislation."
+      },
+      "hostingSafeHarbor": {
+        "title": "7. User Content & Intermediary Liability (DSA / LSSI-CE Safe Harbor)",
+        "content": "Pursuant to the EU Digital Services Act (DSA) and Spanish LSSI-CE (Article 16), TechyComm acts as an intermediary hosting provider. The TechyComm project maintainers do not pre-screen or assume liability for user-generated comments or third-party links, but will act promptly upon receiving valid notice of illegal content."
+      },
+      "liability": {
+        "title": "8. Maximum Limitation of Liability",
+        "content": "To the fullest extent permitted by Spanish and European Union law, the TechyComm project maintainers and contributors shall not be liable for any direct, indirect, incidental, consequential, special, or punitive damages (including loss of data, system disruption, or lost profits) arising out of or related to your use of TechyComm. If any liability cannot be excluded under mandatory EU consumer protection laws, total liability is capped at 0€."
+      },
+      "indemnification": {
+        "title": "9. User Indemnification",
+        "content": "You agree to indemnify, defend, and hold harmless the TechyComm project maintainers and contributors from any third-party claims, liabilities, damages, or costs resulting from your breach of these Terms or misuse of the platform."
+      },
+      "governingLaw": {
+        "title": "10. Governing Law & Jurisdiction",
+        "content": "These Terms are governed exclusively by the laws of Spain and European Union regulations. Any disputes shall be submitted to the competent courts of Spain."
+      },
+      "contact": {
+        "title": "11. Contact",
+        "content": "For inquiries regarding these Terms, contact the TechyComm team at me@davidfrancisco.dev."
+      }
+    }
+  },
+  "privacyPage": {
+    "title": "Privacy Policy",
+    "subtitle": "Your privacy is paramount. Learn how we collect, use, and protect your personal data in compliance with GDPR.",
+    "lastUpdated": "Last updated: September 6, 2026",
+    "sections": {
+      "controller": {
+        "title": "1. Data Controller Identification",
+        "content": "In accordance with the General Data Protection Regulation (GDPR - EU 2016/679) and Spanish Organic Law 3/2018 (LOPDGDD), the data controller responsible for processing your personal information is the TechyComm Project (TechyComm Open Source Community), based in Spain."
+      },
+      "collection": {
+        "title": "2. Information We Collect",
+        "content": "We collect information you provide directly (such as name, username, email address, profile details, and user comments), as well as automated usage data (IP address, browser parameters, pages viewed, and session tokens) required for authentication and platform functionality."
+      },
+      "legalBasis": {
+        "title": "3. Purpose & Legal Basis for Processing",
+        "content": "We process your personal data based on: (a) Performance of a contract: managing your account and service functionality; (b) Legitimate interest: platform security, fraud prevention, and system maintenance; (c) Consent: optional communications or cookies."
+      },
+      "retention": {
+        "title": "4. Data Storage & Retention",
+        "content": "Your data is stored securely using industry-standard encryption. We retain your personal information only as long as your account remains active or as required by law to fulfill tax or legal obligations in Spain."
+      },
+      "rights": {
+        "title": "5. Your Data Protection Rights (GDPR / LOPDGDD)",
+        "content": "Under European data protection laws, you have the right to access, rectify, delete (right to be forgotten), restrict processing, request data portability, and object to processing. You can exercise these rights anytime by contacting me@davidfrancisco.dev. You also have the right to lodge a complaint with the Spanish Data Protection Agency (AEPD - www.aepd.es)."
+      },
+      "thirdParties": {
+        "title": "6. Third-Party Services & Integrations",
+        "content": "We may use trusted third-party service providers (such as GitHub & Google OAuth for authentication, and secure cloud storage) who adhere to strict GDPR compliance standards and data processing agreements."
+      },
+      "cookies": {
+        "title": "7. Cookie Policy",
+        "content": "TechyComm uses essential session cookies to keep you signed in and save your UI theme/language preferences. We do not sell your personal data or track you across third-party websites."
+      },
+      "contact": {
+        "title": "8. Privacy Inquiries",
+        "content": "For any privacy-related questions or data protection requests, please email the TechyComm privacy team at me@davidfrancisco.dev."
+      }
+    }
+  },
+  "aboutPage": {
+    "title": "About TechyComm",
+    "subtitle": "An Open Source technical blogging platform built for developers, engineers, and tech enthusiasts.",
+    "creatorTitle": "Meet the Maintainers",
+    "creatorName": "TechyComm Team",
+    "creatorLocation": "Spain",
+    "creatorBio": "TechyComm is an open-source software project created and maintained by a passionate community of software developers in Spain and around the world, dedicated to modern web engineering, clean code, and open knowledge sharing.",
+    "openSourceTitle": "100% Open Source",
+    "openSourceDescription": "TechyComm is built in the open. The source code is publicly accessible, allowing developers worldwide to inspect, learn, contribute, and collaborate transparently.",
+    "missionTitle": "Our Mission",
+    "missionDescription": "TechyComm bridges technical writing with an interactive developer community. We believe in high-quality technical content, open knowledge, and fostering an inclusive open-source ecosystem.",
+    "valuesTitle": "Core Principles",
+    "values": {
+      "quality": {
+        "title": "Technical Excellence",
+        "description": "Deep-dive articles, practical code walkthroughs, and real-world software architecture insights."
+      },
+      "community": {
+        "title": "Open Source & Community",
+        "description": "Transparent codebase, open community participation, and collaborative technical growth."
+      },
+      "performance": {
+        "title": "Modern & Performant",
+        "description": "Built with cutting-edge web tech to ensure lightning-fast page speed, accessibility, and multi-language support."
+      }
+    },
+    "techStackTitle": "Built With Modern Tech",
+    "contactTitle": "Get in Touch & Contribute",
+    "contactDescription": "Have questions, feedback, or want to contribute to the open-source codebase? Reach out to the TechyComm team.",
+    "contactEmail": "me@davidfrancisco.dev"
   }
 }

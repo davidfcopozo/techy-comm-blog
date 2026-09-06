@@ -810,5 +810,126 @@
     "invalidCredentials": "Correo o contraseña inválidos. Por favor inténtalo de nuevo.",
     "genericSignInError": "Algo salió mal. Por favor inténtalo de nuevo.",
     "registrationFailed": "Error en el registro"
+  },
+  "termsPage": {
+    "title": "Términos de Servicio",
+    "subtitle": "Por favor, lee detenidamente estos términos. TechyComm es una plataforma de código abierto proporcionada 'tal cual' con máxima limitación de responsabilidad conforme a las leyes europeas y españolas.",
+    "lastUpdated": "Última actualización: 6 de septiembre de 2026",
+    "sections": {
+      "identification": {
+        "title": "1. Proyecto de Código Abierto e Identificación del Titular",
+        "content": "TechyComm es una plataforma educativa de blogging técnico y código abierto mantenida por la comunidad open-source de TechyComm, ubicada en España (cumpliendo con la Ley 34/2002 LSSI-CE). Consultas oficiales a través de techycommblog@gmail.com."
+      },
+      "acceptance": {
+        "title": "2. Aceptación de los Términos",
+        "content": "Al acceder a TechyComm, utilizar su código fuente, registrarte o leer su contenido, aceptas estos Términos de Servicio bajo la legislación de España y la Unión Europea. Si no estás de acuerdo, debes cesar el uso de la plataforma."
+      },
+      "openSourceDisclaimer": {
+        "title": "3. Exención de Garantías y Código Abierto 'TAL CUAL'",
+        "content": "TechyComm y todo el código fuente, artículos, fragmentos de código y herramientas asociadas se proporcionan estrictamente 'TAL CUAL' y 'SEGÚN DISPONIBILIDAD', sin garantías de ningún tipo, explícitas o implícitas (incluyendo comerciabilidad, idoneidad para un fin determinado o disponibilidad). La ejecución de tutoriales o código fuente se realiza bajo tu propia responsabilidad."
+      },
+      "account": {
+        "title": "4. Cuentas de Usuario y Responsabilidades",
+        "content": "Los usuarios son los únicos responsables de mantener la confidencialidad de sus credenciales y de toda actividad realizada desde su cuenta. Notifícanos de inmediato si sospechas de cualquier acceso no autorizado."
+      },
+      "intellectualProperty": {
+        "title": "5. Propiedad Intelectual y Licencia Open Source",
+        "content": "El código fuente de TechyComm es de código abierto. Los artículos y aportaciones de los usuarios pertenecen a sus respectivos autores, quienes otorgan a TechyComm una licencia no exclusiva para alojar y mostrar dicho contenido."
+      },
+      "acceptableUse": {
+        "title": "6. Política de Uso Aceptable",
+        "content": "Queda prohibido realizar actos ilícitos, distribuir código malicioso, intentar accesos no autorizados, enviar spam o vulnerar la normativa española o europea."
+      },
+      "hostingSafeHarbor": {
+        "title": "7. Contenido del Usuario y Exención de Responsabilidad como Intermediario (DSA / LSSI-CE)",
+        "content": "Conforme al Reglamento de Servicios Digitales de la UE (DSA) y el Art. 16 de la Ley 34/2002 (LSSI-CE), TechyComm actúa como prestador intermediario de alojamiento. Los mantenedores de TechyComm no supervisan ni asumen responsabilidad por comentarios o enlaces de terceros, actuando diligentemente ante notificaciones de contenido ilícito."
+      },
+      "liability": {
+        "title": "8. Máxima Limitación de Responsabilidad",
+        "content": "En la máxima medida permitida por las leyes de España y de la Unión Europea, los mantenedores y colaboradores del proyecto TechyComm no serán responsables por ningún daño directo, indirecto, incidental, consecuente o punitivo (incluyendo pérdida de datos o interrupción del sistema) derivado del uso de TechyComm. Si la ley imperativa de protección al consumidor de la UE no permite la exclusión total, la responsabilidad total máxima queda limitada a 0€."
+      },
+      "indemnification": {
+        "title": "9. Indemnización por parte del Usuario",
+        "content": "Aceptas mantener indemne a los mantenedores y colaboradores de TechyComm frente a cualquier reclamación, daño o coste derivado del incumplimiento de estos Términos o del uso indebido de la plataforma."
+      },
+      "governingLaw": {
+        "title": "10. Legislación Aplicable y Jurisdicción",
+        "content": "Estos Términos se rigen exclusivamente por las leyes de España y la normativa de la Unión Europea. Cualquier disputa se someterá a los juzgados y tribunales de España."
+      },
+      "contact": {
+        "title": "11. Contacto",
+        "content": "Para cualquier consulta sobre estos Términos, contacta con el equipo de TechyComm en techycommblog@gmail.com."
+      }
+    }
+  },
+  "privacyPage": {
+    "title": "Política de Privacidad",
+    "subtitle": "Tu privacidad es nuestra prioridad. Conoce cómo recopilamos, usamos y protegemos tus datos personales conforme al RGPD.",
+    "lastUpdated": "Última actualización: 6 de septiembre de 2026",
+    "sections": {
+      "controller": {
+        "title": "1. Identificación del Responsable del Tratamiento",
+        "content": "De conformidad con el Reglamento General de Protección de Datos (RGPD - UE 2016/679) y la Ley Orgánica 3/2018 (LOPDGDD) en España, el responsable del tratamiento de tus datos personales es el Proyecto TechyComm (Comunidad Open Source de TechyComm), ubicado en España."
+      },
+      "collection": {
+        "title": "2. Información que Recopilamos",
+        "content": "Recopilamos información que nos proporcionas directamente (como nombre, nombre de usuario, correo electrónico, foto de perfil y comentarios), así como datos de uso automatizados (dirección IP, navegador, páginas visitadas y tokens de sesión) necesarios para la autenticación y el funcionamiento de la plataforma."
+      },
+      "legalBasis": {
+        "title": "3. Finalidad y Base Jurídica del Tratamiento",
+        "content": "Tratamos tus datos sobre las siguientes bases: (a) Ejecución del contrato: gestión de tu cuenta de usuario y servicios del blog; (b) Interés legítimo: seguridad del sistema, prevención de fraude y mantenimiento; (c) Consentimiento: suscripciones opcionales o preferencias."
+      },
+      "retention": {
+        "title": "4. Almacenamiento y Conservación de Datos",
+        "content": "Tus datos se almacenan de forma segura utilizando cifrado conforme a estándares de la industria. Conservamos tus datos personales únicamente mientras tu cuenta permanezca activa o durante los plazos legalmente exigidos en España."
+      },
+      "rights": {
+        "title": "5. Tus Derechos de Protección de Datos (RGPD / LOPDGDD)",
+        "content": "Bajo la normativa europea y española, tienes derecho a acceder, rectificar, suprimir (derecho al olvido), limitar el tratamiento, solicitar la portabilidad y oponerte al tratamiento de tus datos. Puedes ejercer tus derechos escribiendo a techycommblog@gmail.com. Asimismo, tienes derecho a presentar una reclamación ante la Agencia Española de Protección de Datos (AEPD - www.aepd.es)."
+      },
+      "thirdParties": {
+        "title": "6. Servicios de Terceros e Integraciones",
+        "content": "Utilizamos proveedores de servicios de confianza (como GitHub y Google OAuth para autenticación y almacenamiento seguro en la nube) que cumplen estrictamente con los estándares del RGPD y acuerdos de procesamiento de datos."
+      },
+      "cookies": {
+        "title": "7. Política de Cookies",
+        "content": "TechyComm utiliza cookies técnicas esenciales para mantener tu sesión activa y guardar tus preferencias de idioma y tema. No vendemos tus datos personales ni realizamos rastreo con fines publicitarios de terceros."
+      },
+      "contact": {
+        "title": "8. Consultas sobre Privacidad",
+        "content": "Para cualquier consulta o solicitud sobre protección de datos, puedes dirigirte al equipo de privacidad de TechyComm mediante el correo techycommblog@gmail.com."
+      }
+    }
+  },
+  "aboutPage": {
+    "title": "Sobre TechyComm",
+    "subtitle": "Una plataforma de blogging técnico de Código Abierto (Open Source) creada para desarrolladores e ingenieros de software.",
+    "creatorTitle": "Conoce a los Mantenedores",
+    "creatorName": "Equipo de TechyComm",
+    "creatorLocation": "España",
+    "creatorBio": "TechyComm es un proyecto de software de código abierto creado y mantenido por una apasionada comunidad de desarrolladores en España y el resto del mundo, dedicados al desarrollo web moderno, código limpio y conocimiento compartido.",
+    "openSourceTitle": "100% Código Abierto (Open Source)",
+    "openSourceDescription": "TechyComm es un proyecto transparente. El código fuente es de acceso público, permitiendo a desarrolladores de todo el mundo inspeccionar, aprender, contribuir y colaborar de forma abierta.",
+    "missionTitle": "Nuestra Misión",
+    "missionDescription": "TechyComm conecta la redacción técnica con el diálogo abierto. Creemos en el contenido de calidad, el conocimiento libre y la construcción de un ecosistema open-source inclusivo.",
+    "valuesTitle": "Principios Fundamentales",
+    "values": {
+      "quality": {
+        "title": "Excelencia Técnica",
+        "description": "Artículos en profundidad, tutoriales prácticos y visión real sobre arquitectura de software."
+      },
+      "community": {
+        "title": "Código Abierto y Comunidad",
+        "description": "Código transparente, participación abierta de la comunidad y crecimiento colaborativo."
+      },
+      "performance": {
+        "title": "Rendimiento y Modernidad",
+        "description": "Construido con tecnología web de vanguardia para ofrecer una velocidad óptima, accesibilidad e i18n multilingüe."
+      }
+    },
+    "techStackTitle": "Construido con Tecnología Moderna",
+    "contactTitle": "Contacto y Colaboración",
+    "contactDescription": "¿Tienes preguntas o quieres contribuir al proyecto Open Source? Contacta con el equipo de TechyComm.",
+    "contactEmail": "techycommblog@gmail.com"
   }
 }
