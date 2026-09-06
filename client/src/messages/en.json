@@ -418,6 +418,8 @@
     "seeMore": "See More",
     "seeLess": "See Less",
     "searchCategories": "Search categories",
+    "categoryAlreadyAdded": "You have already added this category",
+    "categoryNotFound": "Category not found",
     "tags": "Tags",
     "addTagsToPost": "Add tags to your post",
     "addTag": "Add a tag",
