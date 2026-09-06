@@ -2,6 +2,8 @@ import {
   isValidEmail,
   isValidUsername,
   validateImageUrl,
+  slugValidator,
+  sanitizeSlug,
 } from "../../../src/utils/validators";
 
 describe("validators", () => {
@@ -73,6 +75,94 @@ describe("validators", () => {
       );
       expect(validateImageUrl("")).toBe(false);
       expect(validateImageUrl("not-a-url")).toBe(false);
+    });
+  });
+
+  describe("slugValidator", () => {
+    it("should return true for valid slugs", () => {
+      expect(slugValidator("example")).toBe(true);
+      expect(slugValidator("example-post")).toBe(true);
+      expect(slugValidator("post-123")).toBe(true);
+      expect(slugValidator("123-post")).toBe(true);
+      expect(
+        slugValidator(
+          "how-i-built-a-full-stack-developer-blog-from-scratch-architecture-stack-decisions-and-lessons-learned"
+        )
+      ).toBe(true);
+    });
+
+    it("should return false for invalid slugs", () => {
+      expect(slugValidator("")).toBe(false);
+      expect(slugValidator("-starts-with-hyphen")).toBe(false);
+      expect(slugValidator("ends-with-hyphen-")).toBe(false);
+      expect(slugValidator("double--hyphens")).toBe(false);
+      expect(slugValidator("has spaces in slug")).toBe(false);
+      expect(slugValidator("Uppercase-Slug")).toBe(false);
+      expect(slugValidator("has:special!chars?")).toBe(false);
+      expect(slugValidator("accented-é-slug")).toBe(false);
+    });
+  });
+
+  describe("sanitizeSlug", () => {
+    it("should correctly sanitize titles with colons, commas, and hyphens", () => {
+      const title =
+        "How I Built a Full-Stack Developer Blog from Scratch: Architecture, Stack Decisions, and Lessons Learned";
+      const slug = sanitizeSlug(title);
+
+      expect(slug).toBe(
+        "how-i-built-a-full-stack-developer-blog-from-scratch-architecture-stack-decisions-and-lessons-learned"
+      );
+      expect(slugValidator(slug)).toBe(true);
+    });
+
+    it("should remove diacritics and accented characters", () => {
+      const title = "¿Cómo crear una API REST con Node.js y Express en 2026? ¡Guía práctica!";
+      const slug = sanitizeSlug(title);
+
+      expect(slug).toBe(
+        "como-crear-una-api-rest-con-node-js-y-express-en-2026-guia-practica"
+      );
+      expect(slugValidator(slug)).toBe(true);
+    });
+
+    it("should remove apostrophes naturally without adding extra hyphens", () => {
+      const title = "What's New in TypeScript 5.5: Don't Miss It!";
+      const slug = sanitizeSlug(title);
+
+      expect(slug).toBe("whats-new-in-typescript-5-5-dont-miss-it");
+      expect(slugValidator(slug)).toBe(true);
+    });
+
+    it("should handle German umlauts and eszett", () => {
+      const title = "Über Café & Fußball";
+      const slug = sanitizeSlug(title);
+
+      expect(slug).toBe("uber-cafe-fussball");
+      expect(slugValidator(slug)).toBe(true);
+    });
+
+    it("should trim leading and trailing hyphens and collapse multiple hyphens", () => {
+      const title = "   ---   My Awesome Blog Post   ---   ";
+      const slug = sanitizeSlug(title);
+
+      expect(slug).toBe("my-awesome-blog-post");
+      expect(slugValidator(slug)).toBe(true);
+    });
+
+    it("should handle symbols, slashes, hashtags, and parentheses", () => {
+      const title = "CI/CD Pipeline (Docker & K8s) #1 - 100% Automated!";
+      const slug = sanitizeSlug(title);
+
+      expect(slug).toBe("ci-cd-pipeline-docker-k8s-1-100-automated");
+      expect(slugValidator(slug)).toBe(true);
+    });
+
+    it("should return empty string for empty or non-string inputs", () => {
+      expect(sanitizeSlug("")).toBe("");
+      expect(sanitizeSlug("   ")).toBe("");
+      expect(sanitizeSlug("??? !!! ###")).toBe("");
+      expect(sanitizeSlug(null as any)).toBe("");
+      expect(sanitizeSlug(undefined as any)).toBe("");
     });
   });
 });
