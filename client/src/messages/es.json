@@ -418,6 +418,8 @@
     "seeMore": "Ver Más",
     "seeLess": "Ver Menos",
     "searchCategories": "Buscar categorías",
+    "categoryAlreadyAdded": "Ya has agregado esta categoría",
+    "categoryNotFound": "Categoría no encontrada",
     "tags": "Etiquetas",
     "addTagsToPost": "Agregar etiquetas a tu publicación",
     "addTag": "Agregar una etiqueta",

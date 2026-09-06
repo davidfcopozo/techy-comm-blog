@@ -9,7 +9,8 @@
     "tsc": "tsc",
     "build": "tsc",
     "test": "jest --clearCache && jest --coverage --verbose --detectOpenHandles",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "seed:categories": "ts-node ./src/scripts/seedCategories.ts"
   },
   "keywords": [],
   "author": "",

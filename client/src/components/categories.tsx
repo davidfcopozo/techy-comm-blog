@@ -1,4 +1,11 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  KeyboardEvent,
+  SyntheticEvent,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Input } from "./ui/input";
@@ -8,12 +15,22 @@ import { Skeleton } from "./ui/skeleton";
 import { XIcon } from "./icons";
 import { CategoriesProps } from "@/typings/types";
 import { useTranslations } from "next-intl";
+import { useToast } from "./ui/use-toast";
+
+const normalizeString = (str: string | String) =>
+  String(str)
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
 
 const Categories = ({
   setCategories,
   categories: passedCategories,
 }: CategoriesProps) => {
   const t = useTranslations("editor");
+  const tCommon = useTranslations("common");
+  const { toast } = useToast();
   const {
     data: fetchedCategories,
     isLoading,
@@ -124,16 +141,62 @@ const Categories = ({
   };
 
   const filteredCategories = useMemo(() => {
-    if (categorySearchQuery === "") {
+    if (categorySearchQuery.trim() === "") {
       return availableCategories;
     }
+    const normalizedQuery = normalizeString(categorySearchQuery);
     return (
       availableCategories &&
       availableCategories.filter((category) =>
-        category.name.toLowerCase().includes(categorySearchQuery.toLowerCase())
+        normalizeString(category.name).includes(normalizedQuery)
       )
     );
   }, [availableCategories, categorySearchQuery]);
+
+  const handleAddCategoryFromSearch = (e: SyntheticEvent) => {
+    e.preventDefault();
+    const query = categorySearchQuery.trim();
+    if (!query) return;
+
+    const normalizedQuery = normalizeString(query);
+
+    const isAlreadySelected = selectedCategories.some(
+      (c) => normalizeString(c.name) === normalizedQuery
+    );
+    if (isAlreadySelected) {
+      toast({
+        variant: "destructive",
+        title: tCommon("error"),
+        description: t("categoryAlreadyAdded"),
+      });
+      return;
+    }
+
+    const categoryToAdd =
+      availableCategories.find(
+        (c) => normalizeString(c.name) === normalizedQuery
+      ) ||
+      (filteredCategories && filteredCategories.length > 0
+        ? filteredCategories[0]
+        : null);
+
+    if (categoryToAdd) {
+      handleAddCategory(categoryToAdd);
+      setCategorySearchQuery("");
+    } else {
+      toast({
+        variant: "destructive",
+        title: tCommon("error"),
+        description: t("categoryNotFound"),
+      });
+    }
+  };
+
+  const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleAddCategoryFromSearch(e);
+    }
+  };
 
   return (
     <Card className="w-full">
@@ -163,6 +226,13 @@ const Categories = ({
                 </Button>
               ))
           )}
+          {filteredCategories &&
+            filteredCategories.length === 0 &&
+            categorySearchQuery.trim() !== "" && (
+              <p className="text-xs text-muted-foreground text-center py-1">
+                {t("categoryNotFound")}
+              </p>
+            )}
           {availableCategories && availableCategories.length > 5 && (
             <>
               <Button
@@ -185,27 +255,34 @@ const Categories = ({
           )}
         </div>
         <div className="mt-4 grid gap-2">
-          <div className="relative grid grid-col gap-2 lg:items-center lg:gap-2 lg:grid lg:grid-cols-[1fr]">
+          <div className="grid grid-col gap-2 lg:items-center lg:gap-2 lg:grid lg:grid-cols-[1fr_auto]">
             <Input
               placeholder={t("searchCategories")}
               value={categorySearchQuery}
               onChange={(e) => setCategorySearchQuery(e.target.value)}
+              onKeyDown={handleKeyPress}
             />
-            <div className="flex gap-2 flex-wrap">
-              {selectedCategories &&
-                selectedCategories.length > 0 &&
-                selectedCategories.map((category: CategoryInterface) => (
-                  <Button
-                    key={`${category._id}`}
-                    variant="default"
-                    className="max-w-content justify-between items-center flex whitespace-normal px-2 py-6"
-                    onClick={() => handleRemoveCategory(category)}
-                  >
-                    <span className="flex-1 text-center ">{category.name}</span>
-                    <XIcon classes="h-4 w-4 ml-2 flex-shrink-0" />
-                  </Button>
-                ))}
-            </div>
+            <Button
+              type="button"
+              onClick={(e) => handleAddCategoryFromSearch(e)}
+            >
+              {t("add")}
+            </Button>
+          </div>
+          <div className="flex gap-2 flex-wrap">
+            {selectedCategories &&
+              selectedCategories.length > 0 &&
+              selectedCategories.map((category: CategoryInterface) => (
+                <Button
+                  key={`${category._id}`}
+                  variant="default"
+                  className="max-w-content justify-between items-center flex whitespace-normal px-2 py-6"
+                  onClick={() => handleRemoveCategory(category)}
+                >
+                  <span className="flex-1 text-center ">{category.name}</span>
+                  <XIcon classes="h-4 w-4 ml-2 flex-shrink-0" />
+                </Button>
+              ))}
           </div>
         </div>
       </CardContent>
