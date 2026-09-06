@@ -22,6 +22,22 @@ export const slugValidator = (slug: StringProp) => {
   return slugRegex.test(slug);
 };
 
+export const sanitizeSlug = (text: string): string => {
+  if (!text || typeof text !== "string") {
+    return "";
+  }
+
+  return text
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/ß/g, "ss")
+    .replace(/['’]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-+|-+$/g, "");
+};
+
 export const websiteValidator = (web: StringProp) => {
   return websiteRegex.test(web);
 };
