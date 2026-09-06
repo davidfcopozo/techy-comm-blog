@@ -9,12 +9,12 @@ import Topic from "../models/topicModel";
 import { RequestWithUserInfo } from "../typings/models/user";
 
 export const createTopic = async (
-  req: Request,
+  req: RequestWithUserInfo | any,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const { name, description, user } = req.body;
+    const { name, description } = req.body;
     if (!name || !description) {
       throw new BadRequest(
         "Please provide a name and description for the topic"
@@ -29,7 +29,7 @@ export const createTopic = async (
       throw new BadRequest("Invalid input for topic description");
     }
 
-    if (user.role !== "admin") {
+    if (req.user?.role !== "admin") {
       throw new Unauthenticated(
         "You are not authorized to create a topic, please reach out to an admin"
       );
@@ -130,12 +130,18 @@ export const updateTopicById = async (
 };
 
 export const deleteTopicById = async (
-  req: Request,
+  req: RequestWithUserInfo | any,
   res: Response,
   next: NextFunction
 ) => {
   const { id } = req.params;
   try {
+    if (req.user?.role !== "admin") {
+      throw new Unauthenticated(
+        "You are not authorized to delete this topic, please reach out to an admin"
+      );
+    }
+
     const topic = await Topic.findByIdAndDelete(id);
     if (!topic) {
       throw new NotFound("Topic not found");

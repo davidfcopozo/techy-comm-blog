@@ -134,17 +134,17 @@ export const updateCategoryById = async (
       throw new NotFound("This topic does not exist");
     }
 
-    if (
-      (cat && cat?.postedBy?.toString() !== userId) ||
-      user.role !== "admin"
-    ) {
+    const isOwner = cat && cat?.postedBy?.toString() === userId;
+    const isAdmin = user?.role === "admin";
+
+    if (!isOwner && !isAdmin) {
       throw new Unauthenticated(
         "You are not authorized to update this category"
       );
     }
 
     const category = await Category.findByIdAndUpdate(
-      { _id: categoryID, postedBy: userId },
+      categoryID,
       { name, topic: topicName?._id },
       { new: true, runValidators: true }
     );
@@ -158,16 +158,29 @@ export const updateCategoryById = async (
 };
 
 export const deleteCategoryById = async (
-  req: Request,
+  req: RequestWithUserInfo | any,
   res: Response,
   next: NextFunction
 ) => {
   const { id } = req.params;
+  const userId = req.user?.userId;
+  const userRole = req.user?.role;
   try {
-    const category = await Category.findByIdAndDelete(id);
+    const category = await Category.findById(id);
     if (!category) {
       throw new NotFound("Category not found");
     }
+
+    const isOwner = category?.postedBy && category.postedBy.toString() === userId;
+    const isAdmin = userRole === "admin";
+
+    if (!isOwner && !isAdmin) {
+      throw new Unauthenticated(
+        "You are not authorized to delete this category"
+      );
+    }
+
+    await Category.findByIdAndDelete(id);
     res
       .status(StatusCodes.OK)
       .json({ success: true, msg: `Category has been successfully deleted` });
