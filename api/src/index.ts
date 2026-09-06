@@ -15,6 +15,8 @@ import { errorHandlerMiddleware } from "./middleware/error-handler";
 import { notFound } from "./middleware/not-found";
 import path from "path";
 import { NotificationService } from "./utils/notificationService";
+import { isTokenValid } from "./utils/jwt";
+import { JwtPayload } from "jsonwebtoken";
 import {
   generalLimiter,
   writeLimiter,
@@ -97,22 +99,64 @@ const startServer = async () => {
       },
     });
 
+    // Socket.IO authentication middleware
+    io.use((socket, next) => {
+      try {
+        const token =
+          socket.handshake.auth?.token ||
+          (socket.handshake.headers.authorization?.startsWith("Bearer ")
+            ? socket.handshake.headers.authorization.split(" ")[1]
+            : null);
+
+        if (token) {
+          const decoded = isTokenValid(token) as JwtPayload;
+          if (decoded && decoded.userId) {
+            socket.data.userId = decoded.userId.toString();
+          }
+        }
+      } catch (err) {
+        // Allow unauthenticated connection for public events, but private rooms are guarded
+      }
+      next();
+    });
+
     io.on("connection", (socket) => {
       console.log("User connected:", socket.id);
       let userId: string | null = null;
 
-      socket.on("join", (joinUserId) => {
-        userId = joinUserId;
-        if (userId) {
-          socket.join(userId);
+      socket.on("join", (joinUserId: string) => {
+        if (!joinUserId || typeof joinUserId !== "string") return;
+
+        // If socket is authenticated, it can only join its own room
+        if (socket.data.userId) {
+          if (socket.data.userId === joinUserId) {
+            userId = joinUserId;
+            socket.join(joinUserId);
+            socket.emit("joinConfirmation", { userId, socketId: socket.id });
+          } else {
+            console.warn(
+              `Unauthorized socket join attempt by ${socket.data.userId} to room ${joinUserId}`
+            );
+          }
+          return;
         }
 
-        // Send a confirmation back to the user
-        socket.emit("joinConfirmation", { userId, socketId: socket.id });
+        // In non-production, allow join if no token was provided (dev testing)
+        if (process.env.NODE_ENV !== "production") {
+          userId = joinUserId;
+          socket.join(joinUserId);
+          socket.emit("joinConfirmation", { userId, socketId: socket.id });
+        }
       });
 
       socket.on("test-notification", (data) => {
-        // Send a test notification back to the user's room
+        // Disable test notification in production
+        if (process.env.NODE_ENV === "production") return;
+
+        // Only emit to own room
+        const targetUserId = socket.data.userId || data?.userId;
+        if (!targetUserId) return;
+
         const testNotification = {
           id: `test-${Date.now()}`,
           type: "comment",
@@ -129,7 +173,7 @@ const startServer = async () => {
           createdAt: new Date(),
         };
 
-        io.to(data.userId).emit("notification", testNotification);
+        io.to(targetUserId).emit("notification", testNotification);
       });
 
       // Handle notification synchronization events

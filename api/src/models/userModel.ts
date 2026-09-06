@@ -72,7 +72,7 @@ const userSchema = new Schema<UserInterface>(
 // Encrypt password before saving
 userSchema.pre("save", async function (this: UserInterface, next) {
   if (!this.isModified("password")) {
-    next();
+    return next();
   }
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(`${this.password}`, salt);
@@ -103,8 +103,9 @@ userSchema.methods.comparePassword = async function (password: string) {
 // return JWT token
 userSchema.methods.getJWT = function () {
   const token = JWT.sign(
-    { userId: this._id },
-    process.env.JWT_SECRET as string
+    { userId: this._id, role: this.role },
+    process.env.JWT_SECRET as string,
+    { expiresIn: (process.env.JWT_LIFETIME || "7d") as any }
   );
 
   return token;

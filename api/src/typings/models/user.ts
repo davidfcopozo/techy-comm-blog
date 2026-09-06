@@ -45,7 +45,8 @@ export interface UserInterface extends Document, ModelMethods {
 
 export interface RequestWithUserInfo extends Request {
   user: {
-    userId: String;
+    userId: string;
+    role?: string;
   };
 }
 

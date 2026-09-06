@@ -297,7 +297,7 @@ export const forgotPassword = async (
   next: NextFunction
 ) => {
   try {
-    const { email, ipData, baseUrl } = req.body;
+    const { email, ipData } = req.body;
 
     if (!email) {
       throw new BadRequest("Please provide a valid email address");
@@ -319,7 +319,7 @@ export const forgotPassword = async (
       firstName: user.firstName,
       email: user.email,
       token: passwordResetToken,
-      baseUrl: baseUrl || process.env.PRODUCTION_URL,
+      baseUrl: getBaseUrl(),
       locale: user.locale as string,
       proxyOrVPN: ipData?.isProxyOrVPN || false,
       geoLocation: ipData?.geoLocation || "Unknown location",

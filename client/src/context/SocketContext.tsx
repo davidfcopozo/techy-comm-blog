@@ -14,6 +14,7 @@ import { PostFetchType, UserFetchType } from "@/typings/types";
 import { PostInterface } from "@/typings/interfaces";
 import { useToast } from "@/components/ui/use-toast";
 import { useSessionUserId } from "@/hooks/useSessionUserId";
+import { useSession } from "next-auth/react";
 
 const SocketContext = createContext<SocketContextType>({
   socket: null,
@@ -36,6 +37,7 @@ interface SocketProviderProps {
 export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   const { userId: currentUserId, isLoading: isAuthLoading } =
     useSessionUserId();
+  const { data: session } = useSession();
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const queryClient = useQueryClient();
@@ -250,6 +252,10 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
       transports: ["websocket", "polling"],
       timeout: 20000,
       forceNew: true,
+      withCredentials: true,
+      auth: {
+        token: (session?.user as any)?.accessToken,
+      },
     });
 
     newSocket.on("connect", () => {
@@ -1007,7 +1013,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     return () => {
       newSocket.close();
     };
-  }, [currentUserId, isAuthLoading]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [currentUserId, isAuthLoading, session]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const contextValue = useMemo(
     () => ({
