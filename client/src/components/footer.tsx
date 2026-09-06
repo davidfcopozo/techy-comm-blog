@@ -39,52 +39,36 @@ const Footer = () => {
       <div className="max-w-screen-xl px-4 py-12 mx-auto space-y-8 overflow-hidden sm:px-6 lg:px-8">
         <nav className="flex flex-wrap justify-center -mx-5 -my-2">
           <div className="px-5 py-2">
-            <a
-              href="#"
-              className="text-base leading-6 transition-all duration-300 transition-all duration-300 text-muted-foreground transition-all duration-300 hover:text-foreground"
+            <Link
+              href="/about"
+              className="text-base leading-6 text-muted-foreground transition-all duration-300 hover:text-foreground"
             >
               About
-            </a>
+            </Link>
           </div>
           <div className="px-5 py-2">
-            <a
-              href="#"
-              className="text-base leading-6 transition-all duration-300 text-muted-foreground transition-all duration-300 hover:text-foreground"
+            <Link
+              href="/"
+              className="text-base leading-6 text-muted-foreground transition-all duration-300 hover:text-foreground"
             >
               Blog
-            </a>
+            </Link>
           </div>
           <div className="px-5 py-2">
-            <a
-              href="#"
-              className="text-base leading-6 transition-all duration-300 text-muted-foreground transition-all duration-300 hover:text-foreground"
-            >
-              Team
-            </a>
-          </div>
-          <div className="px-5 py-2">
-            <a
-              href="#"
-              className="text-base leading-6 transition-all duration-300 text-muted-foreground transition-all duration-300 hover:text-foreground"
-            >
-              Pricing
-            </a>
-          </div>
-          <div className="px-5 py-2">
-            <a
-              href="#"
-              className="text-base leading-6 transition-all duration-300 text-muted-foreground transition-all duration-300 hover:text-foreground"
-            >
-              Contact
-            </a>
-          </div>
-          <div className="px-5 py-2">
-            <a
-              href="#"
-              className="text-base leading-6 transition-all duration-300 text-muted-foreground transition-all duration-300 hover:text-foreground"
+            <Link
+              href="/terms"
+              className="text-base leading-6 text-muted-foreground transition-all duration-300 hover:text-foreground"
             >
               Terms
-            </a>
+            </Link>
+          </div>
+          <div className="px-5 py-2">
+            <Link
+              href="/privacy"
+              className="text-base leading-6 text-muted-foreground transition-all duration-300 hover:text-foreground"
+            >
+              Privacy
+            </Link>
           </div>
         </nav>
         <div className="flex justify-center mt-8 space-x-2 md:space-x-4 lg:space-x-6">

@@ -185,10 +185,10 @@ export default function Home() {
                 </div>
               </div>
               <div className="flex gap-2 xl:gap-4 mt-7 ml-2 text-muted-foreground text-xs">
-                <Link href="/#">{tFooter("home")}</Link>
-                <Link href="/#">{tFooter("terms")}</Link>
-                <Link href="/#">{tFooter("about")}</Link>
-                <Link href="/#">{tFooter("privacy")}</Link>
+                <Link href="/" className="hover:text-foreground transition-colors">{tFooter("home")}</Link>
+                <Link href="/terms" className="hover:text-foreground transition-colors">{tFooter("terms")}</Link>
+                <Link href="/about" className="hover:text-foreground transition-colors">{tFooter("about")}</Link>
+                <Link href="/privacy" className="hover:text-foreground transition-colors">{tFooter("privacy")}</Link>
               </div>
             </div>
           </div>
