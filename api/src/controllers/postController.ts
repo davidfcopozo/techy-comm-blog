@@ -20,12 +20,45 @@ export const createPost = async (
 ) => {
   const { userId } = req.user;
   try {
-    if (!req.body.title && !req.body.content) {
+    const hasTitle = Boolean(
+      req.body.title &&
+        typeof req.body.title === "string" &&
+        req.body.title.trim()
+    );
+    const hasContent = Boolean(
+      req.body.content &&
+        typeof req.body.content === "string" &&
+        req.body.content.trim()
+    );
+
+    if (!hasTitle && !hasContent) {
       throw new BadRequest("Title and content are required");
     }
 
-    const rawSlug = req.body.slug?.trim() ? req.body.slug : req.body.title;
+    if (!hasTitle) {
+      throw new BadRequest("Title is required");
+    }
+
+    if (!hasContent) {
+      throw new BadRequest("Content is required");
+    }
+
+    const hasExplicitSlug = Boolean(
+      req.body.slug &&
+        typeof req.body.slug === "string" &&
+        req.body.slug.trim()
+    );
+    const rawSlug = hasExplicitSlug ? req.body.slug.trim() : req.body.title;
     let slug = sanitizeSlug(rawSlug);
+
+    if (!slug) {
+      if (hasExplicitSlug) {
+        throw new BadRequest(
+          "Slug should contain only letters, numbers, or hyphens and should not start or end with a hyphen"
+        );
+      }
+      slug = `post-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
+    }
 
     if (!slugValidator(slug)) {
       throw new BadRequest(
