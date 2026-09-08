@@ -19,7 +19,7 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({
       // Server-side rendering fallback - use our sanitization function
       return (
         <div
-          className={`blog-content ${className}`}
+          className={`blog-content ${className} max-w-full min-w-0 break-words [overflow-wrap:anywhere]`}
           dangerouslySetInnerHTML={{
             __html: sanitizeContent(content),
           }}
@@ -118,7 +118,7 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({
     if (parts.length === 0) {
       return (
         <div
-          className={`blog-content ${className}`}
+          className={`blog-content ${className} max-w-full min-w-0 break-words [overflow-wrap:anywhere]`}
           dangerouslySetInnerHTML={{
             __html: sanitizeContent(content),
           }}
@@ -126,7 +126,13 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({
       );
     }
 
-    return <div className={`blog-content ${className}`}>{parts}</div>;
+    return (
+      <div
+        className={`blog-content ${className} max-w-full min-w-0 break-words [overflow-wrap:anywhere]`}
+      >
+        {parts}
+      </div>
+    );
   };
 
   return renderContent();

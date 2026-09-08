@@ -83,12 +83,12 @@ const BlogPost = memo(function BlogPost({
   }, [safeCoverImage]);
 
   return (
-    <div className="w-full min-h-screen bg-background mt-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col lg:flex-row gap-8">
+    <div className="w-full min-h-screen bg-background mt-16 max-w-full overflow-x-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+        <div className="flex flex-col lg:flex-row gap-8 w-full min-w-0">
           {" "}
           {/* Left Panel - Engagement Tools */}
-          <div className="order-2 lg:order-1 lg:w-20 hidden lg:block">
+          <div className="order-2 lg:order-1 lg:w-20 hidden lg:block flex-shrink-0">
             <div className="lg:sticky bg-muted lg:top-[5.5rem] flex lg:flex-col justify-center gap-2 p-4 rounded-3xl shadow-sm">
               {isPostOwner && (
                 <Button
@@ -148,15 +148,16 @@ const BlogPost = memo(function BlogPost({
             </div>
           </div>
           {/* Main */}
-          <main className="order-1 lg:order-2 lg:flex-1">
-            <article className="rounded-lg overflow-hidden mt-6">
-              <div className="flex flex-col">
+          <main className="order-1 lg:order-2 lg:flex-1 min-w-0 max-w-full w-full">
+            <article className="rounded-lg overflow-hidden mt-6 w-full max-w-full min-w-0">
+              <div className="flex flex-col w-full max-w-full min-w-0">
                 {imgSrc && (
-                  <div className="w-full order-2 lg:order-1 rounded-lg overflow-hidden h-[50vh] sm:h-[60vh] md:h-[70vh] relative">
+                  <div className="w-full max-w-full order-2 lg:order-1 rounded-lg overflow-hidden h-[50vh] sm:h-[60vh] md:h-[70vh] relative">
                     <Image
                       src={imgSrc}
                       alt={t("blogCoverAlt")}
                       fill
+                      sizes="(max-width: 1024px) 100vw, (max-width: 1280px) 75vw, 900px"
                       style={{ objectFit: "cover" }}
                       onError={() => setImgSrc("/default-image.jpg")}
                       priority
@@ -321,10 +322,10 @@ const BlogPost = memo(function BlogPost({
                   </h1>
                 </div>
               </div>
-              <div className="py-6 bg-background">
+              <div className="py-6 bg-background w-full max-w-full overflow-hidden">
                 <ContentRenderer
                   content={post.content || ""}
-                  className="w-[95%] sm:w-[90%] md:w-[80%] pt-4 mx-auto"
+                  className="w-full sm:w-[95%] md:w-[90%] lg:w-[85%] pt-4 mx-auto max-w-full"
                 />
               </div>
               <CommentSection
@@ -335,7 +336,7 @@ const BlogPost = memo(function BlogPost({
             </article>
           </main>
           {/* Right Panel - Author Info */}
-          <div className="order-3 w-72 mx-auto hidden lg:block">
+          <div className="order-3 w-72 mx-auto hidden lg:block flex-shrink-0">
             <div className=" lg:mt-6">
               <AuthorPanel
                 _id={post?.postedBy?._id}
