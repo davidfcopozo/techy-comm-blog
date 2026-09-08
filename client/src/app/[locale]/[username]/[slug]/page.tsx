@@ -1,62 +1,45 @@
-"use client";
-import BlogPost from "@/components/blog-post";
-import SinglePostSkeleton from "@/components/single-post-skeleton";
-import useFetchPost from "@/hooks/useFetchPost";
-import { useInteractions } from "@/hooks/useInteractions";
-import { AuthModal } from "@/components/auth-modal";
-import { useEffect, useState, use } from "react";
+import type { Metadata } from "next";
+import PostClientView from "@/components/post-client-view";
+import {
+  getPostData,
+  getPostJsonLd,
+  getPostMetadata,
+} from "@/lib/post-metadata";
 
-const Blog = (props: { params: Promise<{ slug: string }> }) => {
-  const params = use(props.params);
-  const slug = decodeURI(params.slug);
-  const { data, isFetching, isLoading } = useFetchPost(slug);
-  const [hasInitialData, setHasInitialData] = useState(false);
+interface BlogPostPageProps {
+  params: Promise<{
+    locale: string;
+    username: string;
+    slug: string;
+  }>;
+}
 
-  const {
-    handleLikeClick,
-    handleBookmarkClick,
-    liked,
-    bookmarked,
-    amountOfBookmarks,
-    amountOfLikes,
-    // Auth modal properties
-    isAuthModalOpen,
-    authModalAction,
-    closeAuthModal,
-    handleAuthSuccess,
-  } = useInteractions(data?.data);
+export async function generateMetadata(
+  props: BlogPostPageProps
+): Promise<Metadata> {
+  const params = await props.params;
+  const slug = decodeURIComponent(params.slug);
+  const post = await getPostData(slug);
 
-  useEffect(() => {
-    if (data?.data && !hasInitialData) {
-      setHasInitialData(true);
-    }
-  }, [data?.data, hasInitialData]);
+  return getPostMetadata(post, params.locale, slug);
+}
 
-  if (isLoading || (isFetching && !hasInitialData)) {
-    return <SinglePostSkeleton />;
-  }
+export default async function BlogPostPage(props: BlogPostPageProps) {
+  const params = await props.params;
+  const slug = decodeURIComponent(params.slug);
+  const post = await getPostData(slug);
+
+  const jsonLd = post ? getPostJsonLd(post, params.locale, slug) : null;
 
   return (
-    <div>
-      <BlogPost
-        slug={slug}
-        handleLikeClick={handleLikeClick}
-        handleBookmarkClick={handleBookmarkClick}
-        liked={liked}
-        bookmarked={bookmarked}
-        amountOfBookmarks={amountOfBookmarks}
-        amountOfLikes={amountOfLikes}
-        post={data?.data}
-      />
-
-      <AuthModal
-        isOpen={isAuthModalOpen}
-        onClose={closeAuthModal}
-        action={authModalAction || "like"}
-        onSuccess={handleAuthSuccess}
-      />
-    </div>
+    <>
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
+      <PostClientView slug={slug} initialPost={post} />
+    </>
   );
-};
-
-export default Blog;
+}

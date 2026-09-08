@@ -400,13 +400,17 @@ export const useBlogEditor = ({ initialPost, slug }: UseBlogEditorProps) => {
   // Only show error toast for newPost, success is handled in onSuccess callback
   useEffect(() => {
     if (newPostStatus === "error") {
+      const serverMessage =
+        (newPostError as any)?.response?.data?.message ||
+        (newPostError as any)?.message ||
+        "Failed to create blog post";
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to create blog post",
+        description: serverMessage,
       });
     }
-  }, [newPostStatus, toast]);
+  }, [newPostStatus, newPostError, toast]);
   const handleSubmit = useCallback(
     async (
       status: "draft" | "published" | "unpublished",
@@ -414,7 +418,7 @@ export const useBlogEditor = ({ initialPost, slug }: UseBlogEditorProps) => {
     ) => {
       pendingPreviewRef.current = Boolean(options?.isPreview);
 
-      if (!title) {
+      if (!title || !title.trim()) {
         pendingPreviewRef.current = false;
         return toast({
           variant: "destructive",
@@ -437,10 +441,7 @@ export const useBlogEditor = ({ initialPost, slug }: UseBlogEditorProps) => {
         currentCoverImage = await handleImageUpload(temporaryCoverImage);
       }
       if (initialPost && slug) {
-        const cleanTitle = DOMPurify.sanitize(title, {
-          ALLOWED_TAGS: ["p", "br", "span", "strong", "em", "b", "i"],
-          ALLOWED_ATTR: [],
-        });
+        const cleanTitle = title.trim();
         // Don't sanitize content on client - let server handle it
         const cleanContent = content;
 
@@ -500,10 +501,7 @@ export const useBlogEditor = ({ initialPost, slug }: UseBlogEditorProps) => {
           }
         }
       } else {
-        const cleanTitle = DOMPurify.sanitize(title, {
-          ALLOWED_TAGS: ["p", "br", "span", "strong", "em", "b", "i"],
-          ALLOWED_ATTR: [],
-        });
+        const cleanTitle = title.trim();
         // Don't sanitize content on client - let server handle it
         const cleanContent = content;
         newPostMutate({
