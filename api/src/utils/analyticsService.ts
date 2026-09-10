@@ -1,4 +1,5 @@
 import PostView from "../models/postViewModel";
+import Post from "../models/postModel";
 import PostLike from "../models/postLikeModel";
 import PostBookmark from "../models/postBookmarkModel";
 import PostShare from "../models/postShareModel";
@@ -7,66 +8,60 @@ import UserActivity from "../models/userActivityModel";
 import Comment from "../models/commentModel";
 import mongoose, { Types } from "mongoose";
 
-// Rate limiting configuration
-const RATE_LIMITS = {
-  POST_VIEW_COOLDOWN: 5 * 60 * 1000, // 5 minutes
-  USER_ACTION_COOLDOWN: 1000, // 1 second
-  MAX_VIEWS_PER_IP_PER_HOUR: 100,
-};
-
 export class AnalyticsService {
-  // Helper method to check if view should be recorded (prevent spam)
-  static async shouldRecordView(
+  // Helper method to check if a view is from a unique visitor
+  static async shouldRecordUniqueView(
     postId: string,
     userId?: string,
-    ipAddress?: string
+    ipAddress?: string,
+    userAgent?: string,
+    sessionId?: string
   ): Promise<boolean> {
     try {
-      const now = new Date();
-      const cooldownTime = new Date(
-        now.getTime() - RATE_LIMITS.POST_VIEW_COOLDOWN
-      );
+      // 1. Authenticated user: must only be counted once per post
+      if (userId && Types.ObjectId.isValid(userId)) {
+        const existingUserView = await PostView.findOne({
+          post: new Types.ObjectId(postId),
+          user: new Types.ObjectId(userId),
+        }).select("_id");
 
-      // Check for recent view by the same user or IP
-      const recentViewQuery: any = {
-        post: postId,
-        createdAt: { $gte: cooldownTime },
-      };
-
-      if (userId) {
-        recentViewQuery.user = userId;
-      } else if (ipAddress) {
-        recentViewQuery.ipAddress = ipAddress;
-        // Only check anonymous views for IP
-        recentViewQuery.user = { $exists: false };
-      } else {
-        return false;
-      }
-
-      const recentView = await PostView.findOne(recentViewQuery);
-
-      if (recentView) {
-        return false;
-      }
-
-      // Additional IP rate limiting for anonymous users
-      if (!userId && ipAddress) {
-        const hourAgo = new Date(now.getTime() - 60 * 60 * 1000);
-        const recentViewsCount = await PostView.countDocuments({
-          ipAddress,
-          user: { $exists: false },
-          createdAt: { $gte: hourAgo },
-        });
-
-        if (recentViewsCount >= RATE_LIMITS.MAX_VIEWS_PER_IP_PER_HOUR) {
+        if (existingUserView) {
           return false;
         }
+        return true;
+      }
+
+      // 2. Anonymous visitor: must have IP or session ID
+      if (!ipAddress && !sessionId) {
+        return false;
+      }
+
+      const anonymousConditions: any[] = [];
+      if (sessionId) {
+        anonymousConditions.push({ sessionId });
+      }
+      if (ipAddress) {
+        if (userAgent) {
+          anonymousConditions.push({ ipAddress, userAgent });
+        } else {
+          anonymousConditions.push({ ipAddress });
+        }
+      }
+
+      const existingAnonView = await PostView.findOne({
+        post: new Types.ObjectId(postId),
+        user: { $exists: false },
+        $or: anonymousConditions,
+      }).select("_id");
+
+      if (existingAnonView) {
+        return false;
       }
 
       return true;
     } catch (error) {
-      console.error("Error checking view recording eligibility:", error);
-      return true;
+      console.error("Error checking unique view eligibility:", error);
+      return false;
     }
   }
 
@@ -80,14 +75,42 @@ export class AnalyticsService {
     referrer?: string;
     sessionId?: string;
     viewDuration?: number;
+    isEditing?: boolean;
+    isPreview?: boolean;
+    skipCount?: boolean;
   }) {
     try {
       if (!data.postId || !Types.ObjectId.isValid(data.postId)) {
         throw new Error("Invalid post ID provided");
       }
 
+      // Skip under any editing, previewing, or metadata contexts
+      if (data.isEditing || data.isPreview || data.skipCount) {
+        return null;
+      }
+
       if (data.userId && !Types.ObjectId.isValid(data.userId)) {
-        throw new Error("Invalid user ID provided");
+        data.userId = undefined;
+      }
+
+      // Verify post existence, status, and check author ownership
+      const post = await Post.findById(data.postId).select(
+        "_id postedBy status visits"
+      );
+      if (!post || post.status !== "published") {
+        return null;
+      }
+
+      // STRICT RULE: Under no circumstances can a post owner add up a post view count
+      const postAuthorId =
+        (post.postedBy as any)?._id?.toString() || post.postedBy?.toString();
+
+      if (
+        data.userId &&
+        postAuthorId &&
+        data.userId.toString() === postAuthorId.toString()
+      ) {
+        return null;
       }
 
       // Sanitize viewDuration - Max 24 hours
@@ -104,13 +127,16 @@ export class AnalyticsService {
         ? data.source
         : "direct";
 
-      const canRecordView = await this.shouldRecordView(
+      // STRICT RULE: Only record if this is a unique visitor
+      const isUniqueVisitor = await this.shouldRecordUniqueView(
         data.postId,
         data.userId,
-        ipAddress
+        ipAddress,
+        userAgent,
+        sessionId
       );
 
-      if (!canRecordView) {
+      if (!isUniqueVisitor) {
         return null;
       }
 
@@ -126,6 +152,11 @@ export class AnalyticsService {
       });
 
       await postView.save();
+
+      // Atomically increment post visits count for this unique visitor
+      await Post.findByIdAndUpdate(data.postId, {
+        $inc: { visits: 1 },
+      });
 
       if (data.userId) {
         await this.recordUserActivity({
