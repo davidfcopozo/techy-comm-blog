@@ -22,9 +22,26 @@ export async function GET(
       secret: process.env.NEXTAUTH_SECRET || process.env.NEXT_PUBLIC_NEXTAUTH_SECRET,
     });
 
+    const forwardedFor =
+      req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip");
+    const userAgent = req.headers.get("user-agent");
+    const referer = req.headers.get("referer");
+    const viewMode = req.headers.get("x-view-mode");
+    const skipCount = req.headers.get("x-skip-view-count");
+    const purpose = req.headers.get("x-purpose");
+    const sessionId = req.headers.get("x-session-id");
+
     const headers: any = {
       "Content-Type": "application/json",
     };
+
+    if (forwardedFor) headers["x-forwarded-for"] = forwardedFor;
+    if (userAgent) headers["user-agent"] = userAgent;
+    if (referer) headers["referer"] = referer;
+    if (viewMode) headers["x-view-mode"] = viewMode;
+    if (skipCount) headers["x-skip-view-count"] = skipCount;
+    if (purpose) headers["x-purpose"] = purpose;
+    if (sessionId) headers["x-session-id"] = sessionId;
 
     if (token?.accessToken) {
       headers.Authorization = `Bearer ${token.accessToken}`;
@@ -32,12 +49,11 @@ export async function GET(
 
     if (token?.id || token?.sub) {
       headers["X-User-ID"] = (token.id || token.sub) as string;
-    } else {
-      console.log("❌ No token or token.sub found for post request");
     }
 
+    const search = req.nextUrl.search || "";
     const res = await axios.get(
-      `${process.env.NEXT_PUBLIC_BACKEND_API_ENDPOINT}/posts/${slugOrId}`,
+      `${process.env.NEXT_PUBLIC_BACKEND_API_ENDPOINT}/posts/${slugOrId}${search}`,
       { headers }
     );
 
