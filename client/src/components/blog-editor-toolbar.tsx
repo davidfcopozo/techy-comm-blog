@@ -26,6 +26,7 @@ import {
   Redo,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { LinkPopover } from "./link-popover";
 
 interface BlogEditorToolbarProps {
   editor: Editor;
@@ -238,16 +239,20 @@ export default function BlogEditorToolbar({
         <CodeBlockButton editor={editor} />
         <div className="w-px h-6 bg-muted-foreground/20 mx-2" />
         {/* Media and links */}
-        <Button
-          type="button"
-          variant={editor.isActive("link") ? "default" : "ghost"}
-          size="sm"
-          onClick={onSetLink}
-          className="h-8 w-8 p-0"
-          title={t("addLink")}
-        >
-          <LinkIcon className="h-4 w-4" />
-        </Button>
+        {onSetLink ? (
+          <Button
+            type="button"
+            variant={editor.isActive("link") ? "default" : "ghost"}
+            size="sm"
+            onClick={onSetLink}
+            className="h-8 w-8 p-0"
+            title={t("addLink")}
+          >
+            <LinkIcon className="h-4 w-4" />
+          </Button>
+        ) : (
+          <LinkPopover editor={editor} />
+        )}
         <Button
           type="button"
           variant="ghost"

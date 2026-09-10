@@ -33,7 +33,6 @@ import {
   extensionConfigs,
   defaultImageSettings,
   defaultTableSettings,
-  createPromptDialog,
   validateImageFile,
   validateYouTubeUrl,
 } from "@/utils/blog-editor";
@@ -173,12 +172,6 @@ export default function TiptapBlogEditor({
     throw new Error("Invalid image file");
   };
 
-  const setLink = () => {
-    const url = createPromptDialog(t("enterLinkUrl"));
-    if (url) {
-      editor?.chain().focus().setLink({ href: url }).run();
-    }
-  };
   const addVideo = () => {
     setIsVideoModalOpen(true);
   };
@@ -222,7 +215,6 @@ export default function TiptapBlogEditor({
         editor={editor}
         onAddImage={addImage}
         onAddVideo={addVideo}
-        onSetLink={setLink}
         onInsertTable={insertTable}
       />
       {/* Editor Content */}
