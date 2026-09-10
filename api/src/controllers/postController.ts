@@ -463,7 +463,9 @@ export const updatePostById = async (
         content: sanitizedContent,
       },
       { new: true, runValidators: true }
-    );
+    )
+      .populate("postedBy")
+      .populate("categories");
 
     res.status(StatusCodes.OK).json({ success: true, data: post });
   } catch (err) {
@@ -505,6 +507,7 @@ export const updatePostBySlugOrId = async (
       title,
       content,
       slug,
+      excerpt,
       coverImage,
       bookmarks,
       comments,
@@ -514,10 +517,11 @@ export const updatePostBySlugOrId = async (
     } = req.body;
 
     const updateOperations: any = {};
-
     const setFields: any = {};
+
     if (title !== undefined) setFields.title = title;
     if (content !== undefined) setFields.content = sanitizeContent(content);
+    if (excerpt !== undefined) setFields.excerpt = typeof excerpt === "string" ? excerpt.trim() : "";
     if (slug !== undefined) {
       const sanitizedSlug = sanitizeSlug(slug);
       if (!slugValidator(sanitizedSlug)) {
@@ -525,8 +529,18 @@ export const updatePostBySlugOrId = async (
           "Slug should contain only letters, numbers, or hyphens and should not start or end with a hyphen"
         );
       }
+      if (sanitizedSlug !== oldPost.slug) {
+        const existingPostWithSlug = await Post.findOne({
+          slug: sanitizedSlug,
+          _id: { $ne: oldPost._id },
+        });
+        if (existingPostWithSlug) {
+          throw new BadRequest("Slug is already in use by another post");
+        }
+      }
       setFields.slug = sanitizedSlug;
     }
+
     if (bookmarks !== undefined) setFields.bookmarks = bookmarks;
     if (comments !== undefined) setFields.comments = comments;
     if (status !== undefined) setFields.status = status;
@@ -560,7 +574,9 @@ export const updatePostBySlugOrId = async (
         new: true,
         runValidators: true,
       }
-    ).populate("postedBy");
+    )
+      .populate("postedBy")
+      .populate("categories");
 
     if (!updatedPost) {
       throw new NotFound("Post could not be updated");

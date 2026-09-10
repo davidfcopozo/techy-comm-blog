@@ -30,6 +30,7 @@ const postSchema = new Schema<PostInterface>(
         return value;
       },
     },
+    excerpt: { type: String, trim: true, default: "" },
 
     tags: [{ type: String }],
     comments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comment" }],
