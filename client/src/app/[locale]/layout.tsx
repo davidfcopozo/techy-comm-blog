@@ -15,6 +15,7 @@ import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { locales } from "@/i18n/config";
 import NextTopLoader from "nextjs-toploader";
+import { Analytics } from "@vercel/analytics/next";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -103,6 +104,7 @@ export default async function LocaleLayout({
             </AuthProvider>
           </QueryProvider>
         </NextIntlClientProvider>
+        <Analytics />
       </body>
     </html>
   );
