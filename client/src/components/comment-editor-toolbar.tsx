@@ -14,6 +14,7 @@ import {
   Link as LinkIcon,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { LinkPopover } from "./link-popover";
 
 interface CommentEditorToolbarProps {
   editor: Editor;
@@ -34,13 +35,6 @@ export default function CommentEditorToolbar({
     editor?.chain().focus().toggleBulletList().run();
   const toggleOrderedList = () =>
     editor?.chain().focus().toggleOrderedList().run();
-
-  const setLink = () => {
-    const url = window.prompt(t("enterUrl"));
-    if (url) {
-      editor?.chain().focus().setLink({ href: url }).run();
-    }
-  };
   return (
     <div className="border-b border-muted-foreground/20">
       <div className="flex flex-wrap items-center gap-1 p-2">
@@ -128,16 +122,7 @@ export default function CommentEditorToolbar({
           <ListOrdered className="h-4 w-4" />
         </Button>
         <div className="w-px h-6 bg-muted-foreground/20 mx-1" />
-        <Button
-          type="button"
-          variant={editor.isActive("link") ? "default" : "ghost"}
-          size="sm"
-          onClick={setLink}
-          className="h-8 px-2"
-          title={t("insertLink")}
-        >
-          <LinkIcon className="h-4 w-4" />
-        </Button>
+        <LinkPopover editor={editor} className="h-8 px-2" />
       </div>
     </div>
   );
