@@ -35,5 +35,14 @@ export const optionalAuth = (
     }
   }
 
+  // Fallback to X-User-ID header forwarded from Next.js server/proxy
+  const headerUserId = req.headers["x-user-id"] as string;
+  if (!req.userId && headerUserId) {
+    req.userId = headerUserId;
+    if (!req.user) {
+      req.user = { userId: headerUserId };
+    }
+  }
+
   next();
 };

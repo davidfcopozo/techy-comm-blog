@@ -47,9 +47,16 @@ export const getPostData = cache(async (slug: string): Promise<PostType | null> 
   try {
     const backendUrl =
       process.env.NEXT_PUBLIC_BACKEND_API_ENDPOINT || "http://localhost:8000/api/v1";
-    const res = await fetch(`${backendUrl}/posts/${encodeURIComponent(slug)}`, {
-      next: { revalidate: 60 },
-    });
+    const res = await fetch(
+      `${backendUrl}/posts/${encodeURIComponent(slug)}?skipCount=true`,
+      {
+        headers: {
+          "X-Purpose": "metadata",
+          "X-Skip-View-Count": "true",
+        },
+        next: { revalidate: 60 },
+      }
+    );
 
     if (!res.ok) {
       return null;

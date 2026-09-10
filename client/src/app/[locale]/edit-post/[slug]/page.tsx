@@ -13,7 +13,10 @@ import Link from "next/link";
 const EditPostPage = (props: { params: Promise<{ slug: string }> }) => {
   const params = use(props.params);
   const slug = decodeURI(params.slug);
-  const { data, isPending, error } = useFetchPost(slug);
+  const { data, isPending, error } = useFetchPost(slug, {
+    mode: "edit",
+    skipCount: true,
+  });
 
   const { theme } = useTheme();
 

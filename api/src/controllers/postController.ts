@@ -283,24 +283,6 @@ export const getPostBySlugOrId = async (
       throw new NotFound("Post not found");
     }
 
-    const userId = req.user?.userId;
-    const ipAddress = req.ip || req.connection.remoteAddress;
-    const userAgent = req.get("User-Agent");
-    const referrer = req.get("Referrer");
-
-    if (post.status === "published") {
-      AnalyticsService.recordPostView({
-        postId: post._id.toString(),
-        userId,
-        ipAddress,
-        userAgent,
-        referrer,
-        source: referrer ? "referral" : "direct",
-      }).catch((error) => {
-        console.error("Error recording post view:", error);
-      });
-    }
-
     let enhancedPost = post;
     if (req.userId) {
       try {

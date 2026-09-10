@@ -1,14 +1,33 @@
 import useFetchRequest from "./useFetchRequest";
 
-const useFetchPost = (slug: string, options: Record<string, any> = {}) => {
+interface FetchPostOptions extends Record<string, any> {
+  mode?: string;
+  skipCount?: boolean;
+}
+
+const useFetchPost = (slug: string, options: FetchPostOptions = {}) => {
+  const { mode, skipCount, ...queryOptions } = options;
+
+  const queryParams = new URLSearchParams();
+  if (mode) queryParams.set("mode", mode);
+  if (skipCount) queryParams.set("skipCount", "true");
+  const queryString = queryParams.toString()
+    ? `?${queryParams.toString()}`
+    : "";
+
+  const queryKey =
+    mode || skipCount
+      ? ["post", slug, { mode, skipCount }]
+      : ["post", slug];
+
   const { data, error, isLoading, isFetching, isPending } = useFetchRequest(
-    ["post", slug],
-    slug ? `/api/posts/${slug}` : null,
+    queryKey,
+    slug ? `/api/posts/${slug}${queryString}` : null,
     {
       staleTime: 0,
       skipCustomCache: true,
       refetchOnMount: "always",
-      ...options,
+      ...queryOptions,
     }
   );
 
