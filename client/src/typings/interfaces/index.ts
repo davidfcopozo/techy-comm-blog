@@ -38,6 +38,7 @@ export interface PostInterface extends BaseDocument {
   slug: string;
   postedBy: string;
   coverImage?: string;
+  excerpt?: string;
   likes?: string[];
   bookmarks?: string[];
   likesCount: number;
@@ -127,6 +128,8 @@ export interface InitialPost {
   _id?: string;
   title: string;
   content: string;
+  slug?: string;
+  excerpt?: string;
   coverImage: string | null;
   categories?: CategoryInterface[];
   tags?: string[];
