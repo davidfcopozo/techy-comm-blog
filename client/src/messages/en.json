@@ -439,7 +439,16 @@
     "invalidImageFileType": "Please select a valid image file (JPEG, PNG, GIF, or WebP)",
     "imageSizeExceeded": "Image file size should be less than 10MB",
     "enterLinkUrl": "Enter link URL",
-    "enterLinkText": "Enter link text"
+    "enterLinkText": "Enter link text",
+    "editLink": "Edit Link",
+    "removeLink": "Remove Link",
+    "openInNewTab": "Open in new tab",
+    "linkUrl": "Link URL",
+    "linkText": "Display text",
+    "linkUrlPlaceholder": "https://example.com",
+    "linkTextPlaceholder": "Link text",
+    "urlRequired": "Please enter a valid URL",
+    "openLink": "Open link in new tab"
   },
   "footer": {
     "home": "Home",

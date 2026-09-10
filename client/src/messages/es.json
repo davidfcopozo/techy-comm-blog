@@ -439,7 +439,16 @@
     "invalidImageFileType": "Por favor selecciona un archivo de imagen válido (JPEG, PNG, GIF o WebP)",
     "imageSizeExceeded": "El tamaño del archivo de imagen debe ser menor a 10MB",
     "enterLinkUrl": "Ingresa la URL del enlace",
-    "enterLinkText": "Ingresa el texto del enlace"
+    "enterLinkText": "Ingresa el texto del enlace",
+    "editLink": "Editar enlace",
+    "removeLink": "Eliminar enlace",
+    "openInNewTab": "Abrir en nueva pestaña",
+    "linkUrl": "URL del enlace",
+    "linkText": "Texto a mostrar",
+    "linkUrlPlaceholder": "https://ejemplo.com",
+    "linkTextPlaceholder": "Texto del enlace",
+    "urlRequired": "Por favor ingresa una URL válida",
+    "openLink": "Abrir enlace en nueva pestaña"
   },
   "footer": {
     "home": "Inicio",
