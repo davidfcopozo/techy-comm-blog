@@ -351,6 +351,15 @@
     "relatedPosts": "Publicaciones Relacionadas"
   },
   "editor": {
+    "postMetadata": "Configuración y Metadatos",
+    "slug": "Slug de URL",
+    "slugPlaceholder": "slug-de-publicacion",
+    "slugHelp": "La ruta de URL única para esta publicación.",
+    "excerpt": "Extracto / Descripción",
+    "excerptPlaceholder": "Escribe un breve resumen para motores de búsqueda y vistas previas...",
+    "excerptHelp": "Recomendado: máximo 160 caracteres para motores de búsqueda.",
+    "urlPreview": "Vista previa de URL:",
+    "invalidSlug": "El slug solo puede contener letras minúsculas, números y guiones.",
     "backToPosts": "Volver a publicaciones",
     "coverImage": "Imagen de Portada",
     "uploadNew": "Subir Nueva",
