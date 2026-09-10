@@ -49,6 +49,8 @@ const postViewSchema = new mongoose.Schema<PostViewInterface>(
 postViewSchema.index({ post: 1, createdAt: -1 });
 postViewSchema.index({ user: 1, createdAt: -1 });
 postViewSchema.index({ createdAt: -1 });
+postViewSchema.index({ post: 1, user: 1 });
+postViewSchema.index({ post: 1, ipAddress: 1 });
 
 const PostView = mongoose.model("PostView", postViewSchema);
 
