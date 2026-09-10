@@ -5,6 +5,7 @@ import CoverImage from "./cover-image";
 import { useBlogEditor } from "@/hooks/useBlogEditor";
 import Categories from "./categories";
 import Tags from "./tags";
+import PostMetadataSettings from "./post-metadata-settings";
 import dynamic from "next/dynamic";
 import { BlogEditorProps } from "@/typings/interfaces";
 import { NewPostHeader } from "./new-post-header";
@@ -110,7 +111,7 @@ const BlogEditor: FC<BlogEditorProps> = ({
     }
   };
 
-  const { title, content, coverImage, tags, categories } = postData;
+  const { title, content, coverImage, tags, categories, excerpt, slug: postSlug } = postData;
 
   useEffect(() => {
     if (initialPost) {
@@ -119,11 +120,13 @@ const BlogEditor: FC<BlogEditorProps> = ({
       updatePostState("coverImage", initialPost.coverImage || null);
       updatePostState("categories", initialPost.categories || []);
       updatePostState("tags", initialPost.tags || []);
+      updatePostState("excerpt", initialPost.excerpt || "");
+      updatePostState("slug", initialPost.slug || slug || "");
       if (initialPost.status) {
         setCurrentStatus(initialPost.status);
       }
     }
-  }, [initialPost, updatePostState, setCurrentStatus]);
+  }, [initialPost, slug, updatePostState, setCurrentStatus]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -233,11 +236,17 @@ const BlogEditor: FC<BlogEditorProps> = ({
               </div>
             </div>
           </div>
-          <div className="[&>*:nth-child(even)]:my-8 md:w-1/4 p-4">
-            <CoverImage
-              imageUrl={coverImage}
-              temporaryCoverImage={temporaryCoverImage}
-              onUpload={handleCoverImagePick}
+          <div className="space-y-6 md:w-1/4 p-4">
+          <CoverImage
+            imageUrl={coverImage}
+            temporaryCoverImage={temporaryCoverImage}
+            onUpload={handleCoverImagePick}
+          />
+            <PostMetadataSettings
+              slug={postSlug || ""}
+              onSlugChange={(value) => updatePostState("slug", value)}
+              excerpt={excerpt || ""}
+              onExcerptChange={(value) => updatePostState("excerpt", value)}
             />
             <Categories
               categories={categories}

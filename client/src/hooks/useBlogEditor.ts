@@ -31,6 +31,8 @@ export const useBlogEditor = ({ initialPost, slug }: UseBlogEditorProps) => {
     coverImage: initialPost?.coverImage || null,
     categories: (initialPost?.categories as CategoryInterface[]) || [],
     tags: initialPost?.tags || [],
+    excerpt: initialPost?.excerpt || "",
+    slug: initialPost?.slug || slug || "",
   });
 
   // Track the last saved state to compare against for changes
@@ -40,13 +42,15 @@ export const useBlogEditor = ({ initialPost, slug }: UseBlogEditorProps) => {
     coverImage: initialPost?.coverImage || null,
     categories: (initialPost?.categories as CategoryInterface[]) || [],
     tags: initialPost?.tags || [],
+    excerpt: initialPost?.excerpt || "",
+    slug: initialPost?.slug || slug || "",
   });
 
   const [currentStatus, setCurrentStatus] = useState<
     "draft" | "published" | "unpublished"
   >(initialPost?.status || "draft");
 
-  const { title, content, coverImage, categories, tags } = postData;
+  const { title, content, coverImage, categories, tags, excerpt, slug: postSlug } = postData;
 
   const updatePostState = useCallback(
     <T extends keyof typeof postData>(key: T, value: (typeof postData)[T]) => {
@@ -97,6 +101,8 @@ export const useBlogEditor = ({ initialPost, slug }: UseBlogEditorProps) => {
         coverImage,
         categories,
         tags,
+        excerpt,
+        slug: postSlug,
       });
 
       const isPreview = pendingPreviewRef.current;
@@ -215,10 +221,24 @@ export const useBlogEditor = ({ initialPost, slug }: UseBlogEditorProps) => {
         coverImage,
         categories,
         tags,
+        excerpt,
+        slug: postSlug,
       });
 
       const isPreview = pendingPreviewRef.current;
       pendingPreviewRef.current = false;
+
+      const newSlug = updatePostData?.slug;
+      if (newSlug && slug && newSlug !== slug && !isPreview) {
+        toast({
+          title: "Success",
+          description: "Post updated! Redirecting to new URL...",
+        });
+        setTimeout(() => {
+          router.push(`/edit-post/${newSlug}`);
+        }, 100);
+        return;
+      }
 
       if (isPreview && slug) {
         toast({
@@ -457,6 +477,12 @@ export const useBlogEditor = ({ initialPost, slug }: UseBlogEditorProps) => {
         if (currentCoverImage !== initialPost.coverImage) {
           changes.coverImage = currentCoverImage as string;
         }
+        if (excerpt !== (initialPost.excerpt || "")) {
+          changes.excerpt = excerpt;
+        }
+        if (postSlug && postSlug !== (initialPost.slug || slug || "")) {
+          changes.slug = postSlug;
+        }
 
         // Always include status when explicitly provided (user clicked draft/publish)
         changes.status = status;
@@ -510,6 +536,8 @@ export const useBlogEditor = ({ initialPost, slug }: UseBlogEditorProps) => {
           coverImage: currentCoverImage,
           categories,
           tags,
+          excerpt,
+          slug: postSlug,
           status, // Include status in new post creation
         });
       }
@@ -520,6 +548,8 @@ export const useBlogEditor = ({ initialPost, slug }: UseBlogEditorProps) => {
       coverImage,
       categories,
       tags,
+      excerpt,
+      postSlug,
       initialPost,
       temporaryCoverImage,
       newPostMutate,
@@ -539,6 +569,8 @@ export const useBlogEditor = ({ initialPost, slug }: UseBlogEditorProps) => {
           content !== "<p><br></p>" &&
           content !== lastSavedData.content) ||
         coverImage !== lastSavedData.coverImage ||
+        excerpt !== lastSavedData.excerpt ||
+        postSlug !== lastSavedData.slug ||
         !arraysEqual(categories, lastSavedData.categories) ||
         !arraysEqual(tags, lastSavedData.tags)
       );
@@ -553,6 +585,8 @@ export const useBlogEditor = ({ initialPost, slug }: UseBlogEditorProps) => {
           coverImage: initialPost.coverImage || null,
           categories: initialPost.categories || [],
           tags: initialPost.tags || [],
+          excerpt: initialPost.excerpt || "",
+          slug: initialPost.slug || slug || "",
         };
 
     const cleanTitle = DOMPurify.sanitize(title, {
@@ -564,6 +598,8 @@ export const useBlogEditor = ({ initialPost, slug }: UseBlogEditorProps) => {
       cleanTitle !== comparisonData.title ||
       content !== comparisonData.content ||
       coverImage !== comparisonData.coverImage ||
+      excerpt !== comparisonData.excerpt ||
+      postSlug !== comparisonData.slug ||
       !arraysEqual(categories, comparisonData.categories) ||
       !arraysEqual(tags, comparisonData.tags)
     );
@@ -573,6 +609,8 @@ export const useBlogEditor = ({ initialPost, slug }: UseBlogEditorProps) => {
     coverImage,
     categories,
     tags,
+    excerpt,
+    postSlug,
     initialPost,
     lastSavedData,
   ]);
@@ -586,6 +624,8 @@ export const useBlogEditor = ({ initialPost, slug }: UseBlogEditorProps) => {
         coverImage: initialPost.coverImage || null,
         categories: (initialPost.categories as CategoryInterface[]) || [],
         tags: initialPost.tags || [],
+        excerpt: initialPost.excerpt || "",
+        slug: initialPost.slug || slug || "",
       };
       setPostData(initialData);
       setLastSavedData(initialData);
@@ -593,7 +633,7 @@ export const useBlogEditor = ({ initialPost, slug }: UseBlogEditorProps) => {
         setCurrentStatus(initialPost.status);
       }
     }
-  }, [initialPost]);
+  }, [initialPost, slug]);
   return {
     temporaryCoverImage,
     handleTitleChange,

@@ -8,6 +8,7 @@ export interface PostInterface {
   slug: string;
   postedBy: mongoose.Schema.Types.ObjectId;
   coverImage?: string;
+  excerpt?: string;
   tags?: string[];
   categories?: CategoryInterface[];
   visits?: number;

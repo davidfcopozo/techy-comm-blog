@@ -83,7 +83,9 @@ export function getPostMetadata(
 
   const title = `${post.title} | TechyComm`;
   const description =
-    stripHtmlAndMarkdown(post.content || "", 160) || "One post at a time";
+    (post.excerpt && post.excerpt.trim()) ||
+    stripHtmlAndMarkdown(post.content || "", 160) ||
+    "One post at a time";
 
   const authorName =
     [post.postedBy?.firstName, post.postedBy?.lastName]
@@ -194,7 +196,9 @@ export function getPostJsonLd(post: PostType, locale = "en", slug = "") {
     "TechyComm Author";
 
   const description =
-    stripHtmlAndMarkdown(post.content || "", 160) || "One post at a time";
+    (post.excerpt && post.excerpt.trim()) ||
+    stripHtmlAndMarkdown(post.content || "", 160) ||
+    "One post at a time";
 
   const safeCoverImage =
     post.coverImage &&

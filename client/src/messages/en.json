@@ -351,6 +351,15 @@
     "relatedPosts": "Related Posts"
   },
   "editor": {
+    "postMetadata": "Post Settings & Metadata",
+    "slug": "URL Slug",
+    "slugPlaceholder": "custom-post-slug",
+    "slugHelp": "The unique URL path for this post.",
+    "excerpt": "Excerpt / Description",
+    "excerptPlaceholder": "Write a short summary for search engines and post previews...",
+    "excerptHelp": "Recommended: 160 characters max for search engine results.",
+    "urlPreview": "Live URL Preview:",
+    "invalidSlug": "Slug can only contain lowercase letters, numbers, and hyphens.",
     "backToPosts": "Back to posts",
     "coverImage": "Cover Image",
     "uploadNew": "Upload New",
