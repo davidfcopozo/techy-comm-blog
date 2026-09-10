@@ -285,16 +285,20 @@ const PostsTabContent = memo(
                             <>
                               {post.categories
                                 .slice(0, 2)
-                                .map((category: CategoryType) => (
-                                  <Badge
-                                    key={category._id.toString()}
-                                    variant="secondary"
-                                    className="text-[10px] sm:text-xs px-1.5 py-0.5 sm:px-2.5 sm:py-0.5 truncate max-w-[80px] sm:max-w-[120px]"
-                                    title={category.name.toString()}
-                                  >
-                                    {category.name}
-                                  </Badge>
-                                ))}
+                                .map((category: CategoryType) => {
+                                  const categoryName = category?.name ? String(category.name) : String(category || "");
+                                  const categoryKey = category?._id ? category._id.toString() : String(category || Math.random());
+                                  return (
+                                    <Badge
+                                      key={categoryKey}
+                                      variant="secondary"
+                                      className="text-[10px] sm:text-xs px-1.5 py-0.5 sm:px-2.5 sm:py-0.5 truncate max-w-[80px] sm:max-w-[120px]"
+                                      title={categoryName}
+                                    >
+                                      {categoryName}
+                                    </Badge>
+                                  );
+                                })}
                               {post.categories.length > 2 && (
                                 <Badge
                                   variant="outline"
