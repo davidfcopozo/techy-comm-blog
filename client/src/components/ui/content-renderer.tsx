@@ -1,7 +1,6 @@
 "use client";
 
-import React from "react";
-import DOMPurify from "dompurify";
+import React, { useEffect, useState } from "react";
 import CodeBlockRenderer from "./code-block-renderer";
 import { sanitizeContent } from "@/utils/sanitize-content";
 
@@ -14,18 +13,28 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({
   content,
   className = "",
 }) => {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   const renderContent = () => {
-    if (typeof window === "undefined") {
-      // Server-side rendering fallback - use our sanitization function
+    // During SSR and initial client hydration, render the static sanitized HTML directly.
+    // This ensures identical DOM hierarchy between server and client during hydration.
+    if (!isMounted || typeof window === "undefined") {
       return (
         <div
+          suppressHydrationWarning
           className={`blog-content ${className} max-w-full min-w-0 break-words [overflow-wrap:anywhere]`}
           dangerouslySetInnerHTML={{
             __html: sanitizeContent(content),
           }}
         />
       );
-    } // Create a temporary div to parse the HTML
+    }
+
+    // Create a temporary div to parse the HTML in the browser
     const tempDiv = document.createElement("div");
     tempDiv.innerHTML = sanitizeContent(content);
 
@@ -118,6 +127,7 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({
     if (parts.length === 0) {
       return (
         <div
+          suppressHydrationWarning
           className={`blog-content ${className} max-w-full min-w-0 break-words [overflow-wrap:anywhere]`}
           dangerouslySetInnerHTML={{
             __html: sanitizeContent(content),
