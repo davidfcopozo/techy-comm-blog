@@ -5,6 +5,7 @@ import BlogPost from "@/components/blog-post";
 import SinglePostSkeleton from "@/components/single-post-skeleton";
 import useFetchPost from "@/hooks/useFetchPost";
 import { useInteractions } from "@/hooks/useInteractions";
+import { useRecordPostView } from "@/hooks/useRecordPostView";
 import { AuthModal } from "@/components/auth-modal";
 import { PostType } from "@/typings/types";
 
@@ -25,6 +26,10 @@ export default function PostClientView({
   const [hasInitialData, setHasInitialData] = useState<boolean>(!!initialPost);
 
   const postData = data?.data || initialPost;
+  const postAuthorId =
+    (postData?.postedBy as any)?._id || postData?.postedBy;
+
+  useRecordPostView(postData?._id, postAuthorId);
 
   const {
     handleLikeClick,
