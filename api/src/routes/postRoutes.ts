@@ -15,7 +15,7 @@ import {
   previewPost,
   getUserPosts,
 } from "../controllers/postController";
-import { visitsCounter } from "../middleware/visits-counter";
+import { recordPostView } from "../controllers/analyticsController";
 
 router.route("/").get(optionalAuth, getAllPosts).post(auth, createPost);
 router.route("/my-posts").get(auth, getUserPosts);
@@ -24,9 +24,10 @@ router.route("/bookmark").put(auth, toggleBookmark);
 router.route("/share").post(optionalAuth, sharePost);
 router.route("/preview/:slugOrId").get(auth, previewPost);
 router.route("/category/:category").get(optionalAuth, getPostsByCategory);
+router.post("/:postId/views", optionalAuth, recordPostView);
 router
   .route("/:slugOrId")
-  .get(optionalAuth, visitsCounter, getPostBySlugOrId)
+  .get(optionalAuth, getPostBySlugOrId)
   .patch(auth, updatePostBySlugOrId)
   .delete(auth, deletePostBySlugOrId);
 

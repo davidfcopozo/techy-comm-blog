@@ -12,10 +12,11 @@ import {
   getUserCommentInteractions,
 } from "../controllers/analyticsController";
 import { auth } from "../middleware/auth";
+import { optionalAuth } from "../middleware/optional-auth";
 
 const router = express.Router();
 
-router.post("/posts/:postId/views", recordPostView);
+router.post("/posts/:postId/views", optionalAuth, recordPostView);
 router.post("/posts/:postId/like", auth, togglePostLike);
 router.post("/posts/:postId/bookmark", auth, togglePostBookmark);
 router.get("/posts/:postId/analytics", getPostAnalytics);
