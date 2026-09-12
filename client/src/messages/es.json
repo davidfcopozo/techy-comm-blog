@@ -270,6 +270,10 @@
   },
   "blog": {
     "title": "Blog",
+    "relatedPostsTitle": "Artículos relacionados",
+    "recommendedPostsTitle": "Recomendados para ti",
+    "relatedPostsSubtitle": "Explora más publicaciones sobre los temas de este artículo",
+    "morePostsSubtitle": "Descubre otras publicaciones populares de nuestro blog",
     "readMore": "Leer Más",
     "readLess": "Leer Menos",
     "publishedOn": "Publicado el",
