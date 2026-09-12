@@ -63,14 +63,16 @@ export default function CommentSection({
         comment.post?.toString() === post._id?.toString())
   );
 
-  const hash = window.location.hash;
   useEffect(() => {
-    if (hash === "#comments-section") {
+    if (
+      typeof window !== "undefined" &&
+      window.location.hash === "#comments-section"
+    ) {
       const commentsSection = document.getElementById("comments-section");
       commentsSection?.scrollIntoView({ behavior: "smooth" });
       commentsSection?.focus();
     }
-  }, [hash]);
+  }, []);
 
   return (
     <section className="comment-section w-full max-w-7xl px-4 space-y-6 mb-8 sm:px-0">

@@ -18,7 +18,7 @@ export class AnalyticsService {
     sessionId?: string
   ): Promise<boolean> {
     try {
-      // 1. Authenticated user: must only be counted once per post
+      // 1. Authenticated user: must only be counted once per post ever
       if (userId && Types.ObjectId.isValid(userId)) {
         const existingUserView = await PostView.findOne({
           post: new Types.ObjectId(postId),
@@ -48,9 +48,12 @@ export class AnalyticsService {
         }
       }
 
+      if (anonymousConditions.length === 0) {
+        return false;
+      }
+
       const existingAnonView = await PostView.findOne({
         post: new Types.ObjectId(postId),
-        user: { $exists: false },
         $or: anonymousConditions,
       }).select("_id");
 
@@ -80,7 +83,7 @@ export class AnalyticsService {
     skipCount?: boolean;
   }) {
     try {
-      if (!data.postId || !Types.ObjectId.isValid(data.postId)) {
+      if (!data.postId) {
         throw new Error("Invalid post ID provided");
       }
 
@@ -94,12 +97,22 @@ export class AnalyticsService {
       }
 
       // Verify post existence, status, and check author ownership
-      const post = await Post.findById(data.postId).select(
-        "_id postedBy status visits"
-      );
+      let post;
+      if (Types.ObjectId.isValid(data.postId)) {
+        post = await Post.findById(data.postId).select(
+          "_id postedBy status visits"
+        );
+      } else {
+        post = await Post.findOne({
+          $or: [{ slug: data.postId }, { slug: data.postId.toLowerCase() }],
+        }).select("_id postedBy status visits");
+      }
+
       if (!post || post.status !== "published") {
         return null;
       }
+
+      const actualPostId = post._id.toString();
 
       // STRICT RULE: Under no circumstances can a post owner add up a post view count
       const postAuthorId =
@@ -129,7 +142,7 @@ export class AnalyticsService {
 
       // STRICT RULE: Only record if this is a unique visitor
       const isUniqueVisitor = await this.shouldRecordUniqueView(
-        data.postId,
+        actualPostId,
         data.userId,
         ipAddress,
         userAgent,
@@ -141,7 +154,7 @@ export class AnalyticsService {
       }
 
       const postView = new PostView({
-        post: data.postId,
+        post: new Types.ObjectId(actualPostId),
         user: data.userId ? new Types.ObjectId(data.userId) : undefined,
         ipAddress,
         userAgent,
@@ -154,7 +167,7 @@ export class AnalyticsService {
       await postView.save();
 
       // Atomically increment post visits count for this unique visitor
-      await Post.findByIdAndUpdate(data.postId, {
+      await Post.findByIdAndUpdate(actualPostId, {
         $inc: { visits: 1 },
       });
 
@@ -163,7 +176,7 @@ export class AnalyticsService {
           userId: data.userId,
           action: "view",
           resourceType: "post",
-          resourceId: data.postId,
+          resourceId: actualPostId,
           metadata: {
             source,
             viewDuration,

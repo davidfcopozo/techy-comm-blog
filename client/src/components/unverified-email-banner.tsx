@@ -6,13 +6,14 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import { useAuth } from "@/context/AuthContext";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 export function UnverifiedEmailBanner() {
   const [isVisible, setIsVisible] = useState(true);
   const [isResending, setIsResending] = useState(false);
   const { currentUser } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
 
   // If user is verified or not logged in, don't show the banner
   if (!currentUser?.data || currentUser.data.verified || !isVisible) {
@@ -58,7 +59,7 @@ export function UnverifiedEmailBanner() {
   };
 
   //check if the page is the dashboard page
-  const isDashboardPage = window.location.pathname === "/dashboard";
+  const isDashboardPage = pathname?.includes("/dashboard");
 
   return (
     <Alert

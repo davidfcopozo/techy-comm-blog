@@ -9,10 +9,15 @@ export const recordPostView = async (
 ) => {
   try {
     const { postId } = req.params;
-    const { viewDuration, source, referrer, sessionId } = req.body;
-    const userId = req.user?.userId;
-    const ipAddress = req.ip || req.connection.remoteAddress;
+    const { viewDuration, source, referrer, sessionId } = req.body || {};
+    const userId = req.userId || req.user?.userId;
+    const ipAddress =
+      (req.headers["x-forwarded-for"] as string)?.split(",")[0]?.trim() ||
+      req.ip ||
+      req.connection?.remoteAddress;
     const userAgent = req.get("User-Agent");
+    const clientSessionId =
+      sessionId || (req.headers["x-session-id"] as string);
 
     const postView = await AnalyticsService.recordPostView({
       postId,
@@ -21,13 +26,15 @@ export const recordPostView = async (
       userAgent,
       source,
       referrer,
-      sessionId,
+      sessionId: clientSessionId,
       viewDuration,
     });
 
     return res.status(StatusCodes.OK).json({
       success: true,
-      message: "Post view recorded successfully",
+      message: postView
+        ? "Post view recorded successfully"
+        : "View skipped or already recorded",
       data: postView,
     });
   } catch (error) {

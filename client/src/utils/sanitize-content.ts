@@ -193,8 +193,27 @@ const isValidYouTubeUrl = (url: string): boolean => {
   return !suspiciousPatterns.some((pattern) => pattern.test(decodedUrl));
 };
 
+// Helper to safely get or initialize DOMPurify in browser and SSR environments
+const getDOMPurify = () => {
+  if (typeof window === "undefined") {
+    return null;
+  }
+  const purify = (DOMPurify as any)?.default || DOMPurify;
+  if (purify && typeof purify.sanitize === "function") {
+    return purify;
+  }
+  if (typeof purify === "function") {
+    return purify(window);
+  }
+  return null;
+};
+
 // Post-sanitization security check to remove non-YouTube iframes
 const removeNonYouTubeIframes = (html: string): string => {
+  if (typeof window === "undefined" || typeof DOMParser === "undefined") {
+    return html;
+  }
+
   // Parse the HTML to check for iframes
   const parser = new DOMParser();
   const doc = parser.parseFromString(html, "text/html");
@@ -232,8 +251,22 @@ const removeNonYouTubeIframes = (html: string): string => {
 };
 
 export const sanitizeContent = (dirtyHtml: string) => {
+  if (!dirtyHtml) return "";
+
+  // Server-side rendering fallback (DOMPurify and DOMParser require a browser DOM window)
+  if (typeof window === "undefined") {
+    return dirtyHtml
+      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
+      .replace(/on\w+\s*=\s*(["']).*?\1/gi, "")
+      .replace(/on\w+\s*=\s*[^\s>]+/gi, "")
+      .replace(/javascript:[^"'\s]*/gi, "");
+  }
+
+  const purify = getDOMPurify();
   // First pass: DOMPurify sanitization
-  const sanitized = DOMPurify.sanitize(dirtyHtml, dompurifyConfig);
+  const sanitized = purify
+    ? purify.sanitize(dirtyHtml, dompurifyConfig)
+    : dirtyHtml;
 
   // Second pass: Remove non-YouTube iframes
   const secureHtml = removeNonYouTubeIframes(sanitized);
