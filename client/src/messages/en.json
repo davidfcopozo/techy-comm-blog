@@ -270,6 +270,10 @@
   },
   "blog": {
     "title": "Blog",
+    "relatedPostsTitle": "Related Articles",
+    "recommendedPostsTitle": "Recommended for You",
+    "relatedPostsSubtitle": "Explore more posts matching the topics in this article",
+    "morePostsSubtitle": "Check out other popular articles from our blog",
     "readMore": "Read More",
     "readLess": "Read Less",
     "publishedOn": "Published on",
